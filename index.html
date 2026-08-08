@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>珈琲 — 夜咖啡 · Night Coffee</title>
+<meta name="description" content="一間藏在雨夜街角的咖啡店。霧面玻璃、霓虹與慢煮的時間。A coffee bar hidden in a rainy corner of the night." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- textures -->
+<div class="grain" aria-hidden="true"></div>
+<div class="glass-grid" aria-hidden="true"></div>
+
+<!-- ambient bokeh lights -->
+<div class="ambience" aria-hidden="true">
+  <span class="blob blob--teal"></span>
+  <span class="blob blob--amber"></span>
+  <span class="blob blob--red"></span>
+  <span class="blob blob--pale"></span>
+</div>
+
+<!-- nav -->
+<header class="nav">
+  <a class="nav__brand" href="#top">
+    <span class="nav__mark">珈琲</span>
+    <span class="nav__latin">NIGHT&nbsp;COFFEE</span>
+  </a>
+  <nav class="nav__links">
+    <a href="#story">序</a>
+    <a href="#menu">品</a>
+    <a href="#hours">時</a>
+    <a href="#find">処</a>
+  </nav>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__frame">
+      <p class="hero__eyebrow">深夜 03:00 · 雨のち霧</p>
+      <h1 class="hero__title">
+        <span class="hero__kanji">珈琲</span>
+        <span class="hero__latin">Late-night coffee,<br />brewed slow.</span>
+      </h1>
+      <p class="hero__lede">
+        街角の磨りガラスの向こうに、灯りがひとつ。<br />
+        窗玻璃后的一盏灯，为夜里还醒着的人留着。
+      </p>
+      <div class="hero__actions">
+        <a class="btn btn--solid" href="#menu">看菜單 / Menu</a>
+        <a class="btn btn--ghost" href="#find">找到我們 / Find us</a>
+      </div>
+    </div>
+    <div class="hero__ticker" aria-hidden="true">
+      <div class="hero__ticker-row">
+        <span>単一産地 · SINGLE ORIGIN</span><span>·</span>
+        <span>手沖 · HAND POUR</span><span>·</span>
+        <span>深煎り · DARK ROAST</span><span>·</span>
+        <span>夜間営業 · OPEN LATE</span><span>·</span>
+        <span>単一産地 · SINGLE ORIGIN</span><span>·</span>
+        <span>手沖 · HAND POUR</span><span>·</span>
+        <span>深煎り · DARK ROAST</span><span>·</span>
+        <span>夜間営業 · OPEN LATE</span><span>·</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="story" id="story">
+    <div class="section-index"><span>序</span><span>01</span></div>
+    <div class="story__grid">
+      <div class="story__lead">
+        <h2>一杯，慢慢來。</h2>
+        <p class="story__latin">A room made of glass and steam.</p>
+      </div>
+      <div class="story__body">
+        <p>
+          我們把店開在最不起眼的巷口。門面只有一片起霧的玻璃、
+          一行紅字，和一縷從門縫溢出的咖啡香。
+        </p>
+        <p>
+          豆子每週小批量烘焙，只做當日該有的份量。
+          水溫、時間、手的節奏——都留給杯裡的那點溫度。
+        </p>
+        <p class="story__jp">
+          急がず、一杯ずつ。灯りの下で、時間がゆっくり溶けていく。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section class="menu" id="menu">
+    <div class="section-index"><span>品</span><span>02</span></div>
+    <div class="menu__head">
+      <h2>品書き <span>Menu</span></h2>
+      <p>小さな黒板から。豆は日替わり。</p>
+    </div>
+
+    <div class="menu__cols">
+      <div class="menu__col">
+        <h3 class="menu__cat">濃 · Espresso</h3>
+        <ul class="menu__list">
+          <li><span class="m-name">濃縮 <em>Espresso</em></span><span class="m-dots"></span><span class="m-price">28</span></li>
+          <li><span class="m-name">馬克其朵 <em>Macchiato</em></span><span class="m-dots"></span><span class="m-price">32</span></li>
+          <li><span class="m-name">寇打多 <em>Cortado</em></span><span class="m-dots"></span><span class="m-price">36</span></li>
+          <li><span class="m-name">鐵觀音拿鐵 <em>Oolong Latte</em></span><span class="m-dots"></span><span class="m-price">42</span></li>
+        </ul>
+      </div>
+
+      <div class="menu__col">
+        <h3 class="menu__cat">淡 · Filter</h3>
+        <ul class="menu__list">
+          <li><span class="m-name">手沖 · 衣索比亞 <em>Yirgacheffe</em></span><span class="m-dots"></span><span class="m-price">45</span></li>
+          <li><span class="m-name">手沖 · 瓜地馬拉 <em>Antigua</em></span><span class="m-dots"></span><span class="m-price">45</span></li>
+          <li><span class="m-name">冰滴 <em>Cold Drip</em></span><span class="m-dots"></span><span class="m-price">48</span></li>
+          <li><span class="m-name">黑糖冷萃 <em>Kurozato Brew</em></span><span class="m-dots"></span><span class="m-price">44</span></li>
+        </ul>
+      </div>
+
+      <div class="menu__col">
+        <h3 class="menu__cat">夜 · After Dark</h3>
+        <ul class="menu__list">
+          <li><span class="m-name">威士忌咖啡 <em>Irish</em></span><span class="m-dots"></span><span class="m-price">58</span></li>
+          <li><span class="m-name">焙茶歐蕾 <em>Hojicha Ole</em></span><span class="m-dots"></span><span class="m-price">40</span></li>
+          <li><span class="m-name">柚子氣泡美式 <em>Yuzu Tonic</em></span><span class="m-dots"></span><span class="m-price">46</span></li>
+          <li><span class="m-name">當日甜點 <em>Dessert of the day</em></span><span class="m-dots"></span><span class="m-price">38</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="menu__note">價格以港幣計 · 另設 10% 服務費 · 豆單每日於店內黑板更新</p>
+  </section>
+
+  <!-- HOURS -->
+  <section class="hours" id="hours">
+    <div class="section-index"><span>時</span><span>03</span></div>
+    <div class="hours__inner">
+      <div class="hours__big">
+        <p class="hours__label">営業時間 · Hours</p>
+        <p class="hours__time">18:00<span>—</span>03:00</p>
+        <p class="hours__sub">日暮れから夜明け前まで。<br />從入夜，到將明。</p>
+      </div>
+      <ul class="hours__table">
+        <li><span>週一 休 · Mon</span><span class="off">閉店</span></li>
+        <li><span>週二 – 週四 · Tue–Thu</span><span>18:00 – 01:00</span></li>
+        <li><span>週五 · Fri</span><span>18:00 – 03:00</span></li>
+        <li><span>週六 · Sat</span><span>16:00 – 03:00</span></li>
+        <li><span>週日 · Sun</span><span>16:00 – 24:00</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- FIND -->
+  <section class="find" id="find">
+    <div class="section-index"><span>処</span><span>04</span></div>
+    <div class="find__inner">
+      <div class="find__col">
+        <h2>找我們</h2>
+        <p class="find__addr">
+          香港 · 灣仔<br />
+          某條會下雨的小巷，紅字亮著的那扇玻璃門。<br />
+          <span>Look for the red glow behind frosted glass.</span>
+        </p>
+      </div>
+      <div class="find__col find__col--meta">
+        <div class="find__item"><span class="k">預約 / Booking</span><span class="v">walk-in only</span></div>
+        <div class="find__item"><span class="k">Instagram</span><span class="v">@night.coffee</span></div>
+        <div class="find__item"><span class="k">Mail</span><span class="v">hello@night-coffee.jp</span></div>
+        <div class="find__item"><span class="k">最寄 / Nearest</span><span class="v">A3 出口 · 3 min</span></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span class="foot__mark">珈琲</span>
+  <p>© 2026 NIGHT COFFEE · 為夜裡還醒著的人而煮</p>
+  <a href="#top" class="foot__up">回到頂端 ↑</a>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
