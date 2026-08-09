@@ -1,190 +1,1012 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>珈琲 — 夜咖啡 · Night Coffee</title>
-<meta name="description" content="一間藏在雨夜街角的咖啡店。霧面玻璃、霓虹與慢煮的時間。A coffee bar hidden in a rainy corner of the night." />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;500;600;700;800&family=Zen+Kaku+Gothic+New:wght@300;400;500;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css" />
+<title>珈琲 KAFFEE · 一杯替你走千里路</title>
+<meta name="description" content="记下你喝过的每一只豆,世界地图上就亮起一盏灯。每一杯咖啡,替你走了千千万万的路。" />
 </head>
 <body>
+<style>
+/* =========================================================
+   珈琲千里 — A THOUSAND MILES IN A CUP
+   昭和喫茶店气质:奶油纸、青瓷绿、石板蓝、朱红印章。
+   地图 = 深绿挂板上的一盏盏小灯。
+   ========================================================= */
+:root{
+  --paper:#eae0c9; --paper-2:#e0d3b4; --paper-hi:#f0e7d2;
+  --card:#f2ecdc; --card-2:#ece3cd; --field:#faf6ea;
+  --ink:#2c302b; --ink-soft:#5c6156; --ink-faint:#8f8b76;
+  --board:#2f4a40; --board-2:#243b32;
+  --celadon:#9db8a6; --blue:#5d7386; --good:#3f6b52;
+  --red:#c23b2b; --red-deep:#992d20;
+  --amber:#d9a441; --lamp:#ffcf7a;
+  --line:rgba(44,48,43,.22); --line-soft:rgba(44,48,43,.12);
+  --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","Hiragino Mincho ProN",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --latin:"Baskerville","Cormorant Garamond","Times New Roman",serif;
+  --edge:clamp(16px,4vw,48px);
+}
+/* 夜 — 深夜喫茶店:暗木、奶油字、灯更亮 */
+body[data-theme="night"]{
+  --paper:#1e211c; --paper-2:#171a16; --paper-hi:#262a23;
+  --card:#262b24; --card-2:#20251f; --field:#1a1d18;
+  --ink:#e6dfc8; --ink-soft:#b2ab93; --ink-faint:#7d795f;
+  --blue:#8fa6b8; --good:#7fae90;
+  --red:#d64836; --red-deep:#a53225;
+  --line:rgba(230,223,200,.24); --line-soft:rgba(230,223,200,.12);
+}
+/* 雨 — 湿漉漉:降饱和、偏青灰,像隔着一层水汽 */
+body[data-theme="rain"]{
+  --paper:#dcdfd5; --paper-2:#cfd4c9; --paper-hi:#e5e8de;
+  --card:#e9ebe0; --card-2:#e0e3d6; --field:#f1f3e9;
+  --ink:#333831; --ink-soft:#5e665d; --ink-faint:#8a9187;
+  --blue:#4f6b82; --good:#47705a;
+  --red:#b23a2e; --red-deep:#8c2c22;
+  --line:rgba(51,56,49,.24); --line-soft:rgba(51,56,49,.13);
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html{ scroll-behavior:smooth; }
+body{
+  background:
+    repeating-linear-gradient(0deg, rgba(44,48,43,.022) 0 1px, transparent 1px 26px),
+    repeating-linear-gradient(90deg, rgba(44,48,43,.022) 0 1px, transparent 1px 26px),
+    radial-gradient(120% 80% at 50% 0%, var(--paper-hi) 0%, var(--paper) 55%, var(--paper-2) 100%);
+  color:var(--ink); font-family:var(--sans); font-weight:400;
+  line-height:1.75; letter-spacing:.01em; min-height:100vh;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+}
+::selection{ background:var(--red); color:#fff; }
+.wrap{ max-width:1160px; margin-inline:auto; padding-inline:var(--edge); }
 
-<!-- textures -->
-<div class="grain" aria-hidden="true"></div>
-<div class="glass-grid" aria-hidden="true"></div>
+/* ---------- header ---------- */
+.hd{ padding:clamp(26px,5vh,52px) 0 0; }
+.hd__row{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+.brand{ display:flex; gap:18px; align-items:flex-start; }
+.seal{
+  width:64px; height:64px; flex:0 0 auto; background:var(--red);
+  color:#f6efdd; font-family:var(--serif); font-weight:700; font-size:1.35rem;
+  display:flex; align-items:center; justify-content:center;
+  writing-mode:vertical-rl; letter-spacing:.18em; line-height:1;
+  border-radius:6px; box-shadow:inset 0 0 0 2px rgba(246,239,221,.55), 2px 3px 0 rgba(44,48,43,.18);
+  transform:rotate(-2deg);
+}
+.brand h1{ font-family:var(--serif); font-weight:700; font-size:clamp(1.9rem,5vw,2.7rem);
+  letter-spacing:.12em; line-height:1.15; }
+.brand h1 small{ display:block; font-family:var(--latin); font-weight:400; font-style:italic;
+  font-size:.82rem; letter-spacing:.34em; color:var(--ink-soft); margin-top:8px; }
+.hd__side{ text-align:right; display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+.greet{ font-family:var(--serif); color:var(--ink-soft); font-size:.95rem; }
+.hd__btns{ display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; }
 
-<!-- ambient bokeh lights -->
-<div class="ambience" aria-hidden="true">
-  <span class="blob blob--teal"></span>
-  <span class="blob blob--amber"></span>
-  <span class="blob blob--red"></span>
-  <span class="blob blob--pale"></span>
+.tag{ display:inline-block; border:1px solid var(--line); background:var(--card);
+  color:var(--ink-soft); font-size:.8rem; letter-spacing:.08em; padding:5px 12px;
+  border-radius:999px; cursor:pointer; font-family:var(--sans); transition:all .25s; }
+.tag:hover{ border-color:var(--red); color:var(--red); }
+
+/* 天气/时段小开关 */
+.seg{ display:inline-flex; border:1px solid var(--line); border-radius:999px;
+  overflow:hidden; background:var(--card); }
+.seg button{ border:0; background:transparent; cursor:pointer; color:var(--ink-faint);
+  font-family:var(--sans); font-size:.8rem; letter-spacing:.1em; padding:5px 13px;
+  transition:all .25s; border-right:1px solid var(--line-soft); }
+.seg button:last-child{ border-right:0; }
+.seg button:hover{ color:var(--red); }
+.seg button.on{ background:var(--red); color:#f6efdd; }
+
+/* 雨幕 */
+#rain{ position:fixed; inset:0; z-index:90; pointer-events:none; display:none; }
+body[data-theme="rain"] #rain{ display:block; }
+
+.hd__rule{ margin-top:22px; border:0; height:5px;
+  background:
+    linear-gradient(var(--red), var(--red)) 0 0/100% 2px no-repeat,
+    linear-gradient(var(--line), var(--line)) 0 4px/100% 1px no-repeat; }
+
+/* ---------- map board ---------- */
+.board-sec{ padding-top:clamp(24px,4vh,40px); }
+.board-cap{ display:flex; justify-content:space-between; align-items:baseline; gap:14px; margin-bottom:14px; flex-wrap:wrap; }
+.board-cap h2{ font-family:var(--serif); font-weight:700; font-size:1.25rem; letter-spacing:.14em; }
+.board-cap h2 i{ font-style:normal; color:var(--red); }
+.board-cap p{ color:var(--ink-faint); font-size:.85rem; letter-spacing:.06em; }
+
+.board-scroll{ overflow-x:auto; border-radius:10px; }
+.board{
+  position:relative; min-width:660px; border-radius:10px; overflow:hidden;
+  background:linear-gradient(180deg, var(--board) 0%, var(--board-2) 100%);
+  box-shadow:inset 0 0 0 1px rgba(157,184,166,.25), inset 0 0 60px rgba(0,0,0,.35),
+    0 3px 0 rgba(44,48,43,.2), 0 14px 34px rgba(44,48,43,.16);
+}
+.board::before{ /* 铁丝纹玻璃 */
+  content:""; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:.5;
+  background-image:
+    linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+  background-size:24px 24px; mix-blend-mode:soft-light;
+}
+.board__frame{ position:absolute; inset:10px; z-index:3; pointer-events:none;
+  border:1px solid rgba(157,184,166,.28); border-radius:6px; }
+#map{ display:block; width:100%; cursor:crosshair; }
+#fog{ position:absolute; inset:0; z-index:4; touch-action:none; transition:opacity 1.2s ease; }
+#fog.done{ opacity:0; pointer-events:none; }
+.fog-hint{ position:absolute; z-index:5; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:14px; pointer-events:none;
+  transition:opacity .8s ease; }
+.fog-hint.done{ opacity:0; }
+.fog-hint p{ font-family:var(--serif); color:#3a4a42; font-size:clamp(1rem,2.6vw,1.3rem);
+  letter-spacing:.22em; text-shadow:0 1px 0 rgba(255,255,255,.5); }
+.fog-hint button{ pointer-events:auto; font-family:var(--sans); font-size:.8rem; letter-spacing:.12em;
+  border:1px solid rgba(58,74,66,.5); color:#3a4a42; background:rgba(246,239,221,.6);
+  padding:6px 16px; border-radius:999px; cursor:pointer; }
+.v-cap{ position:absolute; z-index:3; right:16px; top:18px; writing-mode:vertical-rl;
+  font-family:var(--serif); color:rgba(234,224,201,.5); letter-spacing:.4em;
+  font-size:.85rem; pointer-events:none; }
+
+.tip{ position:absolute; z-index:6; max-width:280px; background:var(--card);
+  border:1px solid var(--line); border-radius:8px; padding:14px 16px;
+  box-shadow:0 10px 28px rgba(20,30,25,.35); pointer-events:none;
+  opacity:0; transform:translateY(6px); transition:opacity .2s, transform .2s; }
+.tip.on{ opacity:1; transform:none; }
+.tip h4{ font-family:var(--serif); font-size:1.05rem; letter-spacing:.05em; color:var(--ink); }
+.tip .t-org{ color:var(--red); font-size:.82rem; letter-spacing:.08em; margin-top:2px; }
+.tip .t-alt{ margin-top:8px; font-size:.85rem; color:var(--ink-soft); }
+.tip .t-alt b{ font-family:var(--latin); font-size:1.05rem; color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
+.tip .t-meta{ font-size:.78rem; color:var(--ink-faint); margin-top:6px; letter-spacing:.04em; }
+.tip .t-note{ margin-top:8px; padding-top:8px; border-top:1px dashed var(--line-soft);
+  font-family:var(--serif); font-size:.85rem; color:var(--ink-soft); }
+.tip .t-km{ margin-top:8px; font-size:.8rem; color:var(--blue); letter-spacing:.04em; }
+
+/* ---------- stats tickets ---------- */
+.stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;
+  margin-top:18px; }
+.stat{
+  position:relative; background:var(--card); border:1px solid var(--line);
+  border-radius:8px; padding:16px 18px 14px; text-align:center;
+  background-image:radial-gradient(circle at 0 50%, var(--paper) 7px, transparent 7.5px),
+    radial-gradient(circle at 100% 50%, var(--paper) 7px, transparent 7.5px);
+}
+.stat b{ display:block; font-family:var(--latin); font-weight:600; font-size:clamp(1.5rem,3vw,2rem);
+  color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:.02em; line-height:1.2; }
+.stat span{ display:block; margin-top:4px; font-size:.78rem; letter-spacing:.18em; color:var(--ink-faint); }
+.stat--red b{ color:var(--red); }
+.stats-line{ margin-top:14px; text-align:center; font-family:var(--serif);
+  color:var(--ink-soft); font-size:.95rem; letter-spacing:.1em; }
+.stats-line b{ color:var(--red); font-weight:700; }
+
+/* ---------- two column: form + almanac ---------- */
+.duo{ display:grid; grid-template-columns:1.25fr 1fr; gap:clamp(18px,3vw,32px);
+  margin-top:clamp(40px,7vh,64px); align-items:start; }
+
+.panel{ background:var(--card); border:1px solid var(--line); border-radius:10px;
+  box-shadow:0 2px 0 rgba(44,48,43,.12); overflow:hidden; }
+.panel__hd{ display:flex; align-items:center; gap:10px; padding:14px 20px;
+  border-bottom:1px solid var(--line-soft); background:var(--card-2); }
+.panel__hd .dot{ width:9px; height:9px; border-radius:50%; background:var(--red); box-shadow:0 0 0 3px rgba(194,59,43,.15); }
+.panel__hd h3{ font-family:var(--serif); font-weight:700; font-size:1.05rem; letter-spacing:.16em; }
+.panel__hd small{ margin-left:auto; font-family:var(--latin); font-style:italic; color:var(--ink-faint);
+  letter-spacing:.14em; font-size:.75rem; }
+.panel__bd{ padding:20px; }
+
+/* form */
+.f-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px 16px; }
+.f-full{ grid-column:1 / -1; }
+label{ display:block; font-size:.78rem; letter-spacing:.14em; color:var(--ink-soft); margin-bottom:6px; }
+input,select,textarea{
+  width:100%; font-family:var(--sans); font-size:.95rem; color:var(--ink);
+  background:var(--field); border:1px solid var(--line); border-radius:6px;
+  padding:10px 12px; outline:none; transition:border .2s, box-shadow .2s;
+}
+input:focus,select:focus,textarea:focus{ border-color:var(--red); box-shadow:0 0 0 3px rgba(194,59,43,.12); }
+textarea{ resize:vertical; min-height:64px; font-family:var(--serif); }
+.f-hint{ font-size:.75rem; color:var(--ink-faint); margin-top:6px; letter-spacing:.04em; }
+.btn{
+  display:inline-block; border:0; cursor:pointer; font-family:var(--sans);
+  letter-spacing:.16em; font-size:.92rem; padding:12px 26px; border-radius:6px;
+  transition:all .25s;
+}
+.btn--red{ background:var(--red); color:#f6efdd; box-shadow:0 3px 0 var(--red-deep); }
+.btn--red:hover{ transform:translateY(-1px); box-shadow:0 4px 0 var(--red-deep), 0 8px 20px rgba(194,59,43,.3); }
+.btn--red:active{ transform:translateY(1px); box-shadow:0 1px 0 var(--red-deep); }
+.btn--plain{ background:transparent; border:1px solid var(--line); color:var(--ink-soft); }
+.btn--plain:hover{ border-color:var(--red); color:var(--red); }
+.f-foot{ margin-top:18px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.toast{ font-family:var(--serif); color:var(--red); font-size:.9rem; opacity:0; transition:opacity .5s; }
+.toast.on{ opacity:1; }
+
+/* almanac 签 */
+.omik{ position:relative; min-height:300px; perspective:900px; }
+.omik__card{ position:relative; width:100%; transition:transform .8s cubic-bezier(.2,.7,.25,1); transform-style:preserve-3d; }
+.omik.flipped .omik__card{ transform:rotateY(180deg); }
+.omik__face{ backface-visibility:hidden; -webkit-backface-visibility:hidden; border-radius:8px; }
+.omik__back{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px;
+  min-height:300px; cursor:pointer;
+  background:
+    repeating-linear-gradient(45deg, rgba(194,59,43,.08) 0 10px, transparent 10px 20px),
+    linear-gradient(180deg, var(--card-2), var(--paper-2));
+  border:1px solid var(--line);
+}
+.omik__back .o-seal{ width:54px; height:54px; border-radius:50%; background:var(--red); color:#f6efdd;
+  font-family:var(--serif); display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+  box-shadow:inset 0 0 0 2px rgba(246,239,221,.5); }
+.omik__back p{ font-family:var(--serif); letter-spacing:.3em; color:var(--ink-soft); }
+.omik__back small{ font-size:.75rem; letter-spacing:.2em; color:var(--ink-faint); }
+.omik__front{
+  position:absolute; inset:0; transform:rotateY(180deg);
+  background:var(--field); border:1px solid var(--line); padding:22px;
+  display:flex; flex-direction:column; min-height:300px;
+}
+.o-top{ display:flex; justify-content:space-between; align-items:baseline;
+  border-bottom:2px solid var(--red); padding-bottom:10px; }
+.o-date{ font-family:var(--latin); font-style:italic; color:var(--ink-faint); font-size:.85rem; letter-spacing:.1em; }
+.o-luck{ font-family:var(--serif); font-weight:700; color:var(--red); font-size:1.5rem; letter-spacing:.2em; }
+.o-body{ flex:1; padding:16px 2px; font-family:var(--serif); font-size:.98rem; line-height:2; color:var(--ink); }
+.o-yi{ display:flex; gap:10px; border-top:1px dashed var(--line-soft); padding-top:12px; font-size:.88rem; }
+.o-yi span{ font-family:var(--serif); }
+.o-yi .y{ color:var(--good); } .o-yi .y::before{ content:"宜 "; background:var(--good); color:#f6efdd; padding:1px 6px; border-radius:3px; margin-right:6px; font-size:.78rem; }
+.o-yi .j{ color:var(--red); } .o-yi .j::before{ content:"忌 "; background:var(--red); color:#f6efdd; padding:1px 6px; border-radius:3px; margin-right:6px; font-size:.78rem; }
+
+/* ---------- records ---------- */
+.recs{ margin-top:clamp(40px,7vh,64px); }
+.recs__hd{ display:flex; align-items:baseline; justify-content:space-between; gap:14px; margin-bottom:16px; flex-wrap:wrap; }
+.recs__hd h2{ font-family:var(--serif); font-weight:700; font-size:1.25rem; letter-spacing:.14em; }
+.recs__hd p{ color:var(--ink-faint); font-size:.82rem; }
+.rec{ display:grid; grid-template-columns:auto 1.2fr 1fr auto auto; gap:8px 18px; align-items:baseline;
+  background:var(--card); border:1px solid var(--line-soft); border-radius:8px;
+  padding:13px 18px; margin-bottom:8px; transition:border .2s, transform .2s; }
+.rec:hover{ border-color:var(--line); transform:translateX(3px); }
+.rec .r-date{ font-family:var(--latin); font-style:italic; color:var(--ink-faint); font-size:.82rem; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.rec .r-name{ font-family:var(--serif); font-weight:700; letter-spacing:.04em; }
+.rec .r-org{ color:var(--ink-soft); font-size:.85rem; }
+.rec .r-alt{ font-family:var(--latin); color:var(--blue); font-size:.85rem; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.rec .r-del{ border:0; background:none; color:var(--ink-faint); cursor:pointer; font-size:1rem; padding:2px 6px; border-radius:4px; }
+.rec .r-del:hover{ color:var(--red); background:rgba(194,59,43,.08); }
+.rec .r-note{ grid-column:2 / -1; font-family:var(--serif); color:var(--ink-soft); font-size:.86rem; border-top:1px dashed var(--line-soft); padding-top:6px; }
+.empty{ text-align:center; color:var(--ink-faint); font-family:var(--serif);
+  letter-spacing:.1em; padding:36px 0; border:1px dashed var(--line); border-radius:8px; }
+
+/* ---------- footer ---------- */
+.ft{ margin-top:clamp(50px,9vh,90px); border-top:1px solid var(--line);
+  padding:32px 0 44px; text-align:center; }
+.ft .f-seal{ display:inline-flex; width:44px; height:44px; background:var(--red); color:#f6efdd;
+  font-family:var(--serif); align-items:center; justify-content:center; writing-mode:vertical-rl;
+  font-size:.9rem; letter-spacing:.1em; border-radius:5px; transform:rotate(2deg);
+  box-shadow:inset 0 0 0 1.5px rgba(246,239,221,.5); margin-bottom:14px; }
+.ft p{ color:var(--ink-faint); font-size:.8rem; letter-spacing:.12em; line-height:2; }
+.ft .f-line{ font-family:var(--serif); color:var(--ink-soft); font-size:.92rem; }
+
+/* dialog */
+dialog{ border:1px solid var(--line); border-radius:10px; background:var(--card);
+  padding:26px; max-width:420px; width:calc(100vw - 48px); color:var(--ink); }
+dialog::backdrop{ background:rgba(44,48,43,.45); }
+dialog h3{ font-family:var(--serif); letter-spacing:.14em; margin-bottom:14px; }
+dialog .d-row{ margin-bottom:12px; }
+dialog .d-foot{ display:flex; gap:10px; justify-content:flex-end; margin-top:18px; }
+
+@media (max-width:840px){
+  .duo{ grid-template-columns:1fr; }
+  .rec{ grid-template-columns:auto 1fr auto; }
+  .rec .r-org{ grid-column:2; } .rec .r-alt{ display:none; }
+  .hd__side{ align-items:flex-start; text-align:left; }
+}
+@media (prefers-reduced-motion:reduce){
+  *{ transition:none!important; animation:none!important; scroll-behavior:auto; }
+}
+</style>
+
+<div class="wrap">
+
+  <!-- header -->
+  <header class="hd">
+    <div class="hd__row">
+      <div class="brand">
+        <div class="seal">珈琲</div>
+        <h1>珈琲<small><b style="color:var(--red)">KA</b>FFEE · 一杯替你走千里路</small></h1>
+      </div>
+      <div class="hd__side">
+        <p class="greet" id="greet">你好。</p>
+        <div class="hd__btns">
+          <span class="seg" id="themeSeg">
+            <button data-t="auto">自动</button><button data-t="day">日</button><button data-t="night">夜</button><button data-t="rain">雨</button>
+          </span>
+          <button class="tag" id="btnCity">🏠 所在城市</button>
+          <button class="tag" id="btnExport">导出备份</button>
+          <button class="tag" id="btnImport">导入</button>
+          <input type="file" id="fileImport" accept=".json" hidden />
+        </div>
+      </div>
+    </div>
+    <hr class="hd__rule" />
+  </header>
+
+  <!-- map -->
+  <section class="board-sec">
+    <div class="board-cap">
+      <h2>咖啡地图 <i>· 每一盏灯,是你喝过的一只豆</i></h2>
+      <p id="mapHint">把光标放在灯上,看看它从多高的山上来</p>
+    </div>
+    <div class="board-scroll">
+      <div class="board" id="boardWrap">
+        <canvas id="map"></canvas>
+        <canvas id="fog"></canvas>
+        <div class="fog-hint" id="fogHint">
+          <p>开店前,先把玻璃擦亮</p>
+          <button id="btnWipeAll">一键擦净</button>
+        </div>
+        <div class="board__frame"></div>
+        <span class="v-cap">杯中千里路</span>
+        <div class="tip" id="tip"></div>
+      </div>
+    </div>
+
+    <div class="stats" id="stats"></div>
+    <p class="stats-line" id="statsLine"></p>
+  </section>
+
+  <!-- form + almanac -->
+  <div class="duo">
+    <section class="panel">
+      <div class="panel__hd"><span class="dot"></span><h3>记一只豆</h3><small>LIGHT A LAMP</small></div>
+      <div class="panel__bd">
+        <form id="beanForm">
+          <div class="f-grid">
+            <div class="f-full">
+              <label for="fName">豆名</label>
+              <input id="fName" placeholder="比如:果丁丁合作社 74158" required />
+            </div>
+            <div class="f-full">
+              <label for="fOrigin">产地</label>
+              <input id="fOrigin" list="originList" placeholder="输入可搜索,如:耶加雪菲" required autocomplete="off" />
+              <datalist id="originList"></datalist>
+              <p class="f-hint" id="originHint">选定产地后,海拔会自动带出,可修改</p>
+            </div>
+            <div>
+              <label for="fAlt">生长海拔(米)</label>
+              <input id="fAlt" placeholder="如 1800–2200" />
+            </div>
+            <div>
+              <label for="fDate">喝的日期</label>
+              <input id="fDate" type="date" />
+            </div>
+            <div>
+              <label for="fProcess">处理法</label>
+              <select id="fProcess">
+                <option>水洗</option><option>日晒</option><option>蜜处理</option>
+                <option>厌氧</option><option>湿刨</option><option>其他</option>
+              </select>
+            </div>
+            <div>
+              <label for="fRoast">烘焙度</label>
+              <select id="fRoast">
+                <option>浅焙</option><option selected>中浅焙</option><option>中焙</option>
+                <option>中深焙</option><option>深焙</option>
+              </select>
+            </div>
+            <div class="f-full">
+              <label for="fNote">一句话笔记</label>
+              <textarea id="fNote" placeholder="写一句此刻的感受——比如:雨天,第一口像柚子皮。"></textarea>
+            </div>
+          </div>
+          <div class="f-foot">
+            <button class="btn btn--red" type="submit">点亮这盏灯</button>
+            <button class="btn btn--plain" type="button" id="btnSample">先看看示例</button>
+            <span class="toast" id="toast"></span>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel__hd"><span class="dot"></span><h3>今日咖啡历</h3><small>DAILY OMIKUJI</small></div>
+      <div class="panel__bd">
+        <div class="omik" id="omik">
+          <div class="omik__card">
+            <div class="omik__face omik__back" id="omikBack">
+              <div class="o-seal">籤</div>
+              <p>抽 一 支 今 日 签</p>
+              <small>每天一条咖啡世界的小事</small>
+            </div>
+            <div class="omik__face omik__front">
+              <div class="o-top">
+                <span class="o-date" id="oDate"></span>
+                <span class="o-luck" id="oLuck"></span>
+              </div>
+              <div class="o-body" id="oBody"></div>
+              <div class="o-yi"><span class="y" id="oYi"></span><span class="j" id="oJi"></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- records -->
+  <section class="recs">
+    <div class="recs__hd">
+      <h2>豆单 · 你走过的路</h2>
+      <p>数据只存在这台设备的浏览器里,记得偶尔「导出备份」</p>
+    </div>
+    <div id="recList"></div>
+  </section>
+
+  <footer class="ft">
+    <span class="f-seal">千里</span>
+    <p class="f-line">"你磨豆、注水、等待。而豆子早已翻过山、渡过海,来到你手里。"</p>
+    <p>珈琲 KAFFEE · 为 Lukai 而做 · 二〇二六</p>
+  </footer>
 </div>
 
-<!-- nav -->
-<header class="nav">
-  <a class="nav__brand" href="#top">
-    <span class="nav__mark">珈琲</span>
-    <span class="nav__latin">NIGHT&nbsp;COFFEE</span>
-  </a>
-  <nav class="nav__links">
-    <a href="#story">序</a>
-    <a href="#menu">品</a>
-    <a href="#hours">時</a>
-    <a href="#find">処</a>
-  </nav>
-</header>
+<canvas id="rain"></canvas>
 
-<main id="top">
+<!-- city dialog -->
+<dialog id="dlgCity">
+  <h3>你在哪座城市?</h3>
+  <p class="f-hint" style="margin-bottom:12px">用来计算每只豆"替你走了多少公里"。</p>
+  <div class="d-row">
+    <select id="selCity"></select>
+  </div>
+  <div class="d-foot">
+    <button class="btn btn--plain" id="btnCityCancel" type="button">取消</button>
+    <button class="btn btn--red" id="btnCitySave" type="button">保存</button>
+  </div>
+</dialog>
 
-  <!-- HERO -->
-  <section class="hero">
-    <div class="hero__frame">
-      <p class="hero__eyebrow">深夜 03:00 · 雨のち霧</p>
-      <h1 class="hero__title">
-        <span class="hero__kanji">珈琲</span>
-        <span class="hero__latin">Late-night coffee,<br />brewed slow.</span>
-      </h1>
-      <p class="hero__lede">
-        街角の磨りガラスの向こうに、灯りがひとつ。<br />
-        窗玻璃后的一盏灯，为夜里还醒着的人留着。
-      </p>
-      <div class="hero__actions">
-        <a class="btn btn--solid" href="#menu">看菜單 / Menu</a>
-        <a class="btn btn--ghost" href="#find">找到我們 / Find us</a>
-      </div>
-    </div>
-    <div class="hero__ticker" aria-hidden="true">
-      <div class="hero__ticker-row">
-        <span>単一産地 · SINGLE ORIGIN</span><span>·</span>
-        <span>手沖 · HAND POUR</span><span>·</span>
-        <span>深煎り · DARK ROAST</span><span>·</span>
-        <span>夜間営業 · OPEN LATE</span><span>·</span>
-        <span>単一産地 · SINGLE ORIGIN</span><span>·</span>
-        <span>手沖 · HAND POUR</span><span>·</span>
-        <span>深煎り · DARK ROAST</span><span>·</span>
-        <span>夜間営業 · OPEN LATE</span><span>·</span>
-      </div>
-    </div>
-  </section>
+<script>
+/* ================= data ================= */
+const ORIGINS=[
+ {n:"埃塞俄比亚 · 耶加雪菲",c:"埃塞俄比亚",lat:6.16,lon:38.2,alt:"1700–2200",f:"茉莉花、柠檬、红茶感"},
+ {n:"埃塞俄比亚 · 西达摩",c:"埃塞俄比亚",lat:5.8,lon:38.4,alt:"1550–2200",f:"莓果、蜂蜜、圆润"},
+ {n:"埃塞俄比亚 · 古吉",c:"埃塞俄比亚",lat:5.9,lon:39.0,alt:"1800–2300",f:"草莓、奶油、花香"},
+ {n:"埃塞俄比亚 · 哈拉",c:"埃塞俄比亚",lat:9.3,lon:42.1,alt:"1500–2100",f:"蓝莓、酒香、野性"},
+ {n:"肯尼亚 · 涅里",c:"肯尼亚",lat:-0.42,lon:36.95,alt:"1700–2100",f:"黑加仑、番茄、明亮"},
+ {n:"肯尼亚 · 基里尼亚加",c:"肯尼亚",lat:-0.5,lon:37.3,alt:"1600–1900",f:"乌梅、圣女果、多汁"},
+ {n:"卢旺达 · 西部省",c:"卢旺达",lat:-1.9,lon:29.6,alt:"1500–2000",f:"红苹果、红糖、干净"},
+ {n:"布隆迪 · 卡扬扎",c:"布隆迪",lat:-2.9,lon:29.6,alt:"1700–2000",f:"橙皮、焦糖、圆甜"},
+ {n:"坦桑尼亚 · 乞力马扎罗",c:"坦桑尼亚",lat:-3.2,lon:37.3,alt:"1400–1800",f:"柑橘、黑茶、平衡"},
+ {n:"乌干达 · 布吉苏",c:"乌干达",lat:1.1,lon:34.3,alt:"1500–1900",f:"可可、深色水果"},
+ {n:"刚果(金) · 基伍湖",c:"刚果(金)",lat:-2.0,lon:28.9,alt:"1450–2000",f:"葡萄、红酒感"},
+ {n:"也门 · 摩卡",c:"也门",lat:15.3,lon:43.9,alt:"1500–2400",f:"干果、香料、古老的味道"},
+ {n:"哥伦比亚 · 慧兰",c:"哥伦比亚",lat:2.5,lon:-76.0,alt:"1500–2000",f:"焦糖、柑橘、坚果"},
+ {n:"哥伦比亚 · 娜玲珑",c:"哥伦比亚",lat:1.2,lon:-77.3,alt:"1700–2300",f:"青苹果、蔗糖、明亮"},
+ {n:"巴拿马 · 波奎特",c:"巴拿马",lat:8.78,lon:-82.44,alt:"1400–1900",f:"瑰夏的故乡:柑橘花、佛手柑"},
+ {n:"危地马拉 · 安提瓜",c:"危地马拉",lat:14.56,lon:-90.73,alt:"1500–1700",f:"烟熏、巧克力、火山土壤"},
+ {n:"危地马拉 · 薇薇特南果",c:"危地马拉",lat:15.3,lon:-91.5,alt:"1500–2000",f:"蜜桃、花香、活泼"},
+ {n:"哥斯达黎加 · 塔拉珠",c:"哥斯达黎加",lat:9.66,lon:-84.02,alt:"1200–1900",f:"蜜处理经典:红糖、李子"},
+ {n:"萨尔瓦多 · 圣安娜",c:"萨尔瓦多",lat:13.98,lon:-89.6,alt:"1200–1800",f:"奶油、杏仁、柔和"},
+ {n:"洪都拉斯 · 圣巴巴拉",c:"洪都拉斯",lat:14.9,lon:-88.2,alt:"1300–1700",f:"甜橙、蜂蜜、干净"},
+ {n:"尼加拉瓜 · 新塞哥维亚",c:"尼加拉瓜",lat:13.6,lon:-86.4,alt:"1100–1600",f:"可可、柔顺"},
+ {n:"墨西哥 · 恰帕斯",c:"墨西哥",lat:15.5,lon:-92.3,alt:"1000–1700",f:"坚果、轻巧克力"},
+ {n:"牙买加 · 蓝山",c:"牙买加",lat:18.05,lon:-76.6,alt:"900–1700",f:"顺滑、温和、传奇"},
+ {n:"巴西 · 喜拉多",c:"巴西",lat:-17.5,lon:-47.0,alt:"900–1250",f:"花生、巧克力、低酸"},
+ {n:"巴西 · 摩吉安娜",c:"巴西",lat:-21.5,lon:-47.0,alt:"900–1100",f:"坚果、甜感扎实"},
+ {n:"秘鲁 · 卡哈马卡",c:"秘鲁",lat:-6.5,lon:-78.8,alt:"1600–2100",f:"红糖、柔和果酸"},
+ {n:"玻利维亚 · 央加斯",c:"玻利维亚",lat:-16.2,lon:-67.7,alt:"1500–2300",f:"葡萄、干净透亮"},
+ {n:"厄瓜多尔 · 洛哈",c:"厄瓜多尔",lat:-4.0,lon:-79.2,alt:"1500–2100",f:"花香、细腻"},
+ {n:"夏威夷 · 科纳",c:"美国",lat:19.6,lon:-155.9,alt:"250–900",f:"黄油、温和、岛屿气息"},
+ {n:"印尼 · 苏门答腊 曼特宁",c:"印度尼西亚",lat:2.7,lon:98.5,alt:"1100–1600",f:"药草、雪松、厚重"},
+ {n:"印尼 · 爪哇",c:"印度尼西亚",lat:-7.5,lon:110.0,alt:"900–1400",f:"泥土、深色可可"},
+ {n:"印尼 · 苏拉威西 托拉贾",c:"印度尼西亚",lat:-2.0,lon:120.0,alt:"1100–1800",f:"香料、枫糖"},
+ {n:"巴布亚新几内亚 · 高地",c:"巴布亚新几内亚",lat:-6.0,lon:145.0,alt:"1300–1900",f:"热带水果、红糖"},
+ {n:"印度 · 马拉巴",c:"印度",lat:12.5,lon:75.5,alt:"1000–1500",f:"季风陈化:低酸、醇厚"},
+ {n:"越南 · 大叻",c:"越南",lat:11.9,lon:108.4,alt:"1400–1600",f:"高地阿拉比卡、黑糖"},
+ {n:"老挝 · 波罗芬高原",c:"老挝",lat:15.1,lon:106.1,alt:"1000–1350",f:"焦糖、柔和"},
+ {n:"泰国 · 清莱",c:"泰国",lat:19.9,lon:99.8,alt:"1200–1600",f:"蜂蜜、花草"},
+ {n:"缅甸 · 掸邦",c:"缅甸",lat:21.0,lon:96.5,alt:"1300–1800",f:"果干、红茶"},
+ {n:"东帝汶 · 艾尔梅拉",c:"东帝汶",lat:-8.8,lon:125.6,alt:"1000–1600",f:"可可、草本"},
+ {n:"中国 · 云南保山",c:"中国",lat:25.1,lon:99.2,alt:"1200–1900",f:"红糖、乌龙茶感"},
+ {n:"中国 · 云南普洱",c:"中国",lat:22.8,lon:101.0,alt:"1100–1700",f:"坚果、甜熟果"},
+ {n:"中国 · 台湾阿里山",c:"中国",lat:23.5,lon:120.8,alt:"1000–1600",f:"茶感、桂花"}
+];
+const CITIES=[
+ ["上海",31.23,121.47],["北京",39.9,116.4],["广州",23.13,113.26],["深圳",22.54,114.06],
+ ["杭州",30.27,120.16],["成都",30.57,104.06],["重庆",29.56,106.55],["武汉",30.59,114.3],
+ ["西安",34.34,108.94],["南京",32.06,118.8],["苏州",31.3,120.58],["长沙",28.23,112.94],
+ ["昆明",25.04,102.71],["青岛",36.07,120.38],["厦门",24.48,118.09],["大连",38.91,121.61],
+ ["天津",39.34,117.36],["郑州",34.75,113.62],["香港",22.32,114.17],["澳门",22.2,113.55],
+ ["台北",25.03,121.57],["东京",35.68,139.69],["新加坡",1.35,103.82]
+];
+const ALMANAC=[
+ {t:"咖啡只生长在南北回归线之间的一条带子里,人们叫它「咖啡带」。你喝的每一杯,都来自地球的腰上。",y:"摊开地图",j:"喝隔夜壶"},
+ {t:"「耶加雪菲」在当地语言里意为「安顿下来的湿地」。一个叫人安顿下来的名字,难怪喝起来也是。",y:"水洗耶加",j:"心浮气躁"},
+ {t:"瑰夏 Geisha 其实来自埃塞俄比亚的 Gesha 森林,五十年代辗转到巴拿马,才被世界听见。好豆子也需要运气。",y:"给豆子一点耐心",j:"以价论豆"},
+ {t:"摩卡不是巧克力,是也门红海边的一座老港口。几百年前,全世界的咖啡都从那里上船。",y:"读一页历史",j:"错把糖浆当摩卡"},
+ {t:"曼特宁的名字源自苏门答腊的曼代宁族人——据说是一场误会:有人问「这是什么咖啡」,对方以为在问「你是哪族人」。",y:"将错就错",j:"较真"},
+ {t:"手冲前的闷蒸,是让豆子把烘焙时憋住的二氧化碳呼出来。先让它呼吸,再让它说话。",y:"闷蒸三十秒",j:"急着注水"},
+ {t:"一杯手冲大约需要五十颗豆子。五十颗,每一颗都翻过山、过了海。",y:"数一数豆子",j:"浪费"},
+ {t:"咖啡樱桃从开花到成熟,要九个月——和一个人的孕育一样长。",y:"慢慢等",j:"催熟"},
+ {t:"咖啡花是白色的,香气像茉莉,一年只开两三天。种咖啡的人说,那几天整座山都是甜的。",y:"闻闻花香",j:"错过花期"},
+ {t:"海拔越高,昼夜温差越大,豆子长得越慢、越致密,风味也越亮。好味道多半长在难走的地方。",y:"高海拔浅焙",j:"贪快"},
+ {t:"日本第一家咖啡馆「可否茶馆」1888 年开在东京上野。一百多年过去,喫茶店的灯还亮着。",y:"进一家老店",j:"只喝连锁"},
+ {t:"卡布奇诺的名字来自嘉布遣会修士袍子的颜色——奶咖交融的那种褐。",y:"打一杯绵密奶泡",j:"烫坏牛奶"},
+ {t:"咖啡因的半衰期约五小时。下午三点后的浓缩,午夜还剩一半在血里。",y:"午后最后一杯",j:"睡前浓缩"},
+ {t:"一杯咖啡的百分之九十八是水。豆再好,水不好,一切白搭。",y:"用好水",j:"将就"},
+ {t:"在埃塞俄比亚,咖啡要用陶壶 Jebena 煮三道,配爆米花,请邻居一起喝。咖啡从来不是一个人的事。",y:"请朋友喝一杯",j:"独享好豆"},
+ {t:"昭和年代的喫茶店,会为常客留一只专属杯子,叫「キープカップ」。有人记得你的杯子,就是有人记得你。",y:"给自己留一只杯",j:"用一次性杯"},
+ {t:"越南人用滴滤壶配炼乳,又浓又甜,像热带的黄昏。世上不止一种正确的喝法。",y:"试试新喝法",j:"鄙视链"},
+ {t:"意式浓缩表面那层金色的 crema,是压力把咖啡油脂打成的泡沫——一杯浓缩的名片。",y:"观察 crema",j:"放凉了再喝"},
+ {t:"芬兰人均咖啡消耗全球第一,一年约十二公斤。极夜太长,总要有什么是热的。",y:"再来一杯",j:"数量羞耻"},
+ {t:"云南咖啡始于 1892 年,一位法国传教士在朱苦拉村种下的几棵树。如今那些树的后代还在结果。",y:"喝一支云南豆",j:"小看家门口"},
+ {t:"精品咖啡的门槛是杯测 80 分。但你最喜欢的那一杯,不需要任何人打分。",y:"相信自己的舌头",j:"唯分数论"},
+ {t:"日晒是最古老的处理法:整颗果实摊在非洲床上晒两三周,果肉的甜一点点渗进豆子里。",y:"晒晒太阳",j:"阴干自己"},
+ {t:"在意大利点「latte」,你会得到一杯纯牛奶——拿铁在意大利语里就是牛奶的意思。",y:"学一个新词",j:"想当然"},
+ {t:"虹吸壶十九世纪就发明了,靠蒸汽把水推上去,再让咖啡落下来。像一场小型的潮汐。",y:"看水位起落",j:"心急揭盖"},
+ {t:"摩卡壶是 1933 年意大利人比乐蒂造的,八角的铝壶,至今几乎没变过样子。好设计不用改。",y:"用旧物",j:"喜新厌旧"},
+ {t:"冰滴咖啡相传源于荷兰商船——漫长航路上没法煮水,就让冷水一滴一滴穿过咖啡粉。一杯要等八小时。",y:"等一杯冰滴",j:"催"},
+ {t:"咖啡豆其实不是豆,是咖啡樱桃的果核。我们喝的是一颗果子的心。",y:"吃颗水果",j:"望文生义"},
+ {t:"罗布斯塔的咖啡因是阿拉比卡的两倍,苦而壮。世界需要温柔,也需要烈性。",y:"接受不同",j:"一刀切"},
+ {t:"贝多芬每杯咖啡坚持数六十颗豆,一颗不多一颗不少。天才的偏执,常常落在小事上。",y:"认真对待小事",j:"差不多先生"},
+ {t:"巴赫写过一部《咖啡康塔塔》,讲一个姑娘宁可不嫁人也要喝咖啡。三百年前的咖啡瘾,和今天一模一样。",y:"听一首巴赫",j:"戒断"},
+ {t:"1675 年英王查理二世想关掉所有咖啡馆,因为人们在里面议论朝政。十一天后,他怂了。",y:"和人聊天",j:"闭门造车"},
+ {t:"波士顿倾茶事件后,喝咖啡在美国成了爱国行为。一杯饮料的命运,常常和时代绑在一起。",y:"想想来路",j:"只看眼前"},
+ {t:"「美式咖啡」的名字来自二战:驻意美军嫌浓缩太烈,兑水喝,意大利人笑称那是 Americano。",y:"淡一点也好",j:"逞强"},
+ {t:"「第三波咖啡」把咖啡当作葡萄酒一样讲产地、讲风土。而你手里这杯,就是风土走到你面前。",y:"读豆袋背面",j:"囫囵吞下"},
+ {t:"杯测师啜吸时那声响亮的「嘶溜」,是为了让咖啡雾化铺满口腔。专业,有时候听起来不太优雅。",y:"大声啜吸",j:"怕丢人"},
+ {t:"烘焙时豆子会「爆」两次:一爆清脆,二爆细密。烘焙师靠耳朵,听出一炉豆子的命运。",y:"侧耳听",j:"分神"},
+ {t:"水温高一度,萃取快一分。九十度上下的那几度之间,藏着一杯咖啡的性格。",y:"降一度试试",j:"一成不变"},
+ {t:"存豆最怕光、氧、潮、热。豆子和人一样,需要一个阴凉安静的地方待着。",y:"密封避光",j:"冰箱门上放豆"},
+ {t:"「一期一会」原是茶道的话:此刻这一杯,水温、心情、天光,过了就再也复刻不出。咖啡也一样。",y:"珍重此刻",j:"想着下一杯"},
+ {t:"肯尼亚的 SL28 品种,本是为抗旱选育的,却意外有了黑加仑般的风味。许多好事,都是意外。",y:"拥抱意外",j:"全按计划"},
+ {t:"牙买加蓝山受原产地法律保护,木桶包装,曾是全世界最贵的咖啡。名气是真的,但未必是你的菜。",y:"祛魅",j:"迷信名牌"},
+ {t:"哥伦比亚的咖啡多种在陡坡上,机器上不去,至今靠人手一颗颗采。你杯里的,有人的指纹。",y:"谢谢采豆人",j:"觉得理所当然"}
+];
 
-  <!-- STORY -->
-  <section class="story" id="story">
-    <div class="section-index"><span>序</span><span>01</span></div>
-    <div class="story__grid">
-      <div class="story__lead">
-        <h2>一杯，慢慢來。</h2>
-        <p class="story__latin">A room made of glass and steam.</p>
-      </div>
-      <div class="story__body">
-        <p>
-          我們把店開在最不起眼的巷口。門面只有一片起霧的玻璃、
-          一行紅字，和一縷從門縫溢出的咖啡香。
-        </p>
-        <p>
-          豆子每週小批量烘焙，只做當日該有的份量。
-          水溫、時間、手的節奏——都留給杯裡的那點溫度。
-        </p>
-        <p class="story__jp">
-          急がず、一杯ずつ。灯りの下で、時間がゆっくり溶けていく。
-        </p>
-      </div>
-    </div>
-  </section>
+/* ================= land polygons (rough, stylized) ================= */
+const LAND=[
+ [[-165,65],[-150,70],[-130,71],[-110,72],[-90,73],[-70,68],[-55,52],[-65,45],[-75,40],[-80,32],[-82,25],[-90,20],[-95,16],[-92,14],[-88,13],[-85,11],[-83,9],[-79,8],[-85,12],[-92,15],[-97,16],[-105,20],[-110,23],[-115,30],[-122,37],[-125,45],[-130,52],[-140,58],[-152,58],[-160,55],[-168,60]],
+ [[-78,7],[-70,12],[-62,10],[-55,6],[-50,0],[-44,-3],[-38,-6],[-35,-9],[-39,-15],[-41,-22],[-48,-28],[-53,-34],[-58,-39],[-62,-41],[-65,-47],[-69,-52],[-71,-54],[-73,-50],[-72,-45],[-71,-38],[-71,-30],[-70,-22],[-72,-16],[-77,-12],[-81,-5],[-80,0],[-78,4]],
+ [[-17,15],[-16,22],[-10,30],[-5,35],[10,37],[20,33],[30,31],[34,28],[38,20],[43,11],[51,12],[46,5],[42,0],[40,-5],[38,-12],[35,-20],[32,-26],[27,-33],[20,-35],[15,-30],[12,-20],[12,-10],[8,-2],[5,4],[-5,5],[-10,6],[-14,10]],
+ [[35,29],[40,32],[48,30],[55,25],[59,22],[57,17],[52,15],[47,13],[43,12],[39,16],[35,22]],
+ [[-10,43],[-8,36],[0,36],[10,38],[15,37],[20,35],[27,36],[35,36],[44,40],[50,37],[57,25],[61,24],[66,25],[70,20],[72,15],[77,8],[80,12],[82,17],[87,22],[92,21],[95,16],[98,10],[102,7],[105,10],[108,12],[110,20],[115,23],[120,26],[122,31],[122,37],[126,35],[128,39],[130,43],[135,45],[140,50],[145,55],[155,58],[162,60],[170,64],[178,66],[178,71],[160,72],[140,73],[120,74],[100,75],[80,72],[60,70],[40,70],[30,71],[20,70],[10,64],[5,60],[-2,58],[-5,52],[-2,48],[-6,44]],
+ [[130,31],[133,34],[137,35],[140,36],[142,40],[145,44],[143,43],[139,38],[135,34],[131,32]],
+ [[-5,50],[-2,53],[-4,58],[-7,57],[-6,52]],
+ [[95,5],[99,3],[103,-1],[106,-4],[104,-6],[100,-2],[96,2]],
+ [[105,-6],[110,-7],[114,-8],[112,-8.5],[107,-7.5]],
+ [[109,1],[113,4],[117,6],[119,2],[116,-2],[112,-3],[109,-1]],
+ [[119,0],[121,1],[123,0],[121,-3],[120,-5],[119,-3]],
+ [[131,-1],[136,-2],[141,-3],[146,-6],[150,-9],[147,-9],[142,-8],[136,-5],[132,-3]],
+ [[114,-22],[114,-30],[116,-34],[122,-34],[130,-32],[136,-35],[140,-38],[147,-39],[150,-37],[153,-32],[153,-27],[150,-22],[146,-18],[142,-13],[137,-14],[132,-12],[126,-14],[120,-18]],
+ [[120,22],[121.5,23.5],[121.8,25],[120.8,24.5]],
+ [[44,-16],[47,-14],[50,-16],[49,-21],[46,-25],[44,-22]],
+ [[-45,60],[-30,68],[-20,72],[-25,78],[-40,80],[-55,76],[-52,68]],
+ [[166,-46],[170,-44],[174,-41],[175,-37],[173,-39],[168,-44]],
+ [[-84,22],[-80,23],[-75,20],[-79,21],[-83,21.5]],
+ [[-77.5,17.8],[-76.2,18.1],[-76.5,17.6]]
+];
 
-  <!-- MENU -->
-  <section class="menu" id="menu">
-    <div class="section-index"><span>品</span><span>02</span></div>
-    <div class="menu__head">
-      <h2>品書き <span>Menu</span></h2>
-      <p>小さな黒板から。豆は日替わり。</p>
-    </div>
+/* ================= state ================= */
+const LS_BEANS="kissa.beans", LS_HOME="kissa.home", LS_OMIK="kissa.omik", SS_WIPE="kissa.wiped";
+let beans=[]; try{ beans=JSON.parse(localStorage.getItem(LS_BEANS)||"[]"); }catch(e){ beans=[]; }
+let home; try{ home=JSON.parse(localStorage.getItem(LS_HOME)); }catch(e){}
+if(!home) home={name:"上海",lat:31.23,lon:121.47};
 
-    <div class="menu__cols">
-      <div class="menu__col">
-        <h3 class="menu__cat">濃 · Espresso</h3>
-        <ul class="menu__list">
-          <li><span class="m-name">濃縮 <em>Espresso</em></span><span class="m-dots"></span><span class="m-price">28</span></li>
-          <li><span class="m-name">馬克其朵 <em>Macchiato</em></span><span class="m-dots"></span><span class="m-price">32</span></li>
-          <li><span class="m-name">寇打多 <em>Cortado</em></span><span class="m-dots"></span><span class="m-price">36</span></li>
-          <li><span class="m-name">鐵觀音拿鐵 <em>Oolong Latte</em></span><span class="m-dots"></span><span class="m-price">42</span></li>
-        </ul>
-      </div>
+const $=(id)=>document.getElementById(id);
+const reduceMotion=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-      <div class="menu__col">
-        <h3 class="menu__cat">淡 · Filter</h3>
-        <ul class="menu__list">
-          <li><span class="m-name">手沖 · 衣索比亞 <em>Yirgacheffe</em></span><span class="m-dots"></span><span class="m-price">45</span></li>
-          <li><span class="m-name">手沖 · 瓜地馬拉 <em>Antigua</em></span><span class="m-dots"></span><span class="m-price">45</span></li>
-          <li><span class="m-name">冰滴 <em>Cold Drip</em></span><span class="m-dots"></span><span class="m-price">48</span></li>
-          <li><span class="m-name">黑糖冷萃 <em>Kurozato Brew</em></span><span class="m-dots"></span><span class="m-price">44</span></li>
-        </ul>
-      </div>
+/* ================= helpers ================= */
+function hav(a,b,c,d){ const R=6371,r=Math.PI/180;
+  const p=(c-a)*r, q=(d-b)*r;
+  const h=Math.sin(p/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(q/2)**2;
+  return Math.round(R*2*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))); }
+const fmt=(n)=>n.toLocaleString("zh-CN");
+function todayStr(){ const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function originOf(name){ return ORIGINS.find(o=>o.n===name); }
 
-      <div class="menu__col">
-        <h3 class="menu__cat">夜 · After Dark</h3>
-        <ul class="menu__list">
-          <li><span class="m-name">威士忌咖啡 <em>Irish</em></span><span class="m-dots"></span><span class="m-price">58</span></li>
-          <li><span class="m-name">焙茶歐蕾 <em>Hojicha Ole</em></span><span class="m-dots"></span><span class="m-price">40</span></li>
-          <li><span class="m-name">柚子氣泡美式 <em>Yuzu Tonic</em></span><span class="m-dots"></span><span class="m-price">46</span></li>
-          <li><span class="m-name">當日甜點 <em>Dessert of the day</em></span><span class="m-dots"></span><span class="m-price">38</span></li>
-        </ul>
-      </div>
-    </div>
-    <p class="menu__note">價格以港幣計 · 另設 10% 服務費 · 豆單每日於店內黑板更新</p>
-  </section>
+/* ================= 北京时间 / 主题 ================= */
+function bjHour(){ return (new Date().getUTCHours()+8)%24; }
 
-  <!-- HOURS -->
-  <section class="hours" id="hours">
-    <div class="section-index"><span>時</span><span>03</span></div>
-    <div class="hours__inner">
-      <div class="hours__big">
-        <p class="hours__label">営業時間 · Hours</p>
-        <p class="hours__time">18:00<span>—</span>03:00</p>
-        <p class="hours__sub">日暮れから夜明け前まで。<br />從入夜，到將明。</p>
-      </div>
-      <ul class="hours__table">
-        <li><span>週一 休 · Mon</span><span class="off">閉店</span></li>
-        <li><span>週二 – 週四 · Tue–Thu</span><span>18:00 – 01:00</span></li>
-        <li><span>週五 · Fri</span><span>18:00 – 03:00</span></li>
-        <li><span>週六 · Sat</span><span>16:00 – 03:00</span></li>
-        <li><span>週日 · Sun</span><span>16:00 – 24:00</span></li>
-      </ul>
-    </div>
-  </section>
+/* ================= header greet ================= */
+(function(){
+  const h=bjHour(); let g;
+  if(h>=5&&h<11) g="早,Lukai。今天从哪一杯开始?";
+  else if(h>=11&&h<14) g="午安,Lukai。饭后一杯,刚刚好。";
+  else if(h>=14&&h<18) g="午后了。留意咖啡因的半衰期哦。";
+  else if(h>=18&&h<23) g="晚上好,Lukai。今天的豆子表现如何?";
+  else g="这么晚还醒着,Lukai?那就再冲一杯吧。";
+  $("greet").textContent=g;
+})();
 
-  <!-- FIND -->
-  <section class="find" id="find">
-    <div class="section-index"><span>処</span><span>04</span></div>
-    <div class="find__inner">
-      <div class="find__col">
-        <h2>找我們</h2>
-        <p class="find__addr">
-          香港 · 灣仔<br />
-          某條會下雨的小巷，紅字亮著的那扇玻璃門。<br />
-          <span>Look for the red glow behind frosted glass.</span>
-        </p>
-      </div>
-      <div class="find__col find__col--meta">
-        <div class="find__item"><span class="k">預約 / Booking</span><span class="v">walk-in only</span></div>
-        <div class="find__item"><span class="k">Instagram</span><span class="v">@night.coffee</span></div>
-        <div class="find__item"><span class="k">Mail</span><span class="v">hello@night-coffee.jp</span></div>
-        <div class="find__item"><span class="k">最寄 / Nearest</span><span class="v">A3 出口 · 3 min</span></div>
-      </div>
-    </div>
-  </section>
+/* ================= theme: 自动(北京时间) / 日 / 夜 / 雨 ================= */
+const LS_THEME="kissa.theme";
+let themeMode; try{ themeMode=localStorage.getItem(LS_THEME); }catch(e){}
+if(!["auto","day","night","rain"].includes(themeMode)) themeMode="auto";
+function applyTheme(){
+  const t=themeMode==="auto" ? (bjHour()>=6&&bjHour()<18?"day":"night") : themeMode;
+  document.body.dataset.theme=t;
+  document.querySelectorAll("#themeSeg button").forEach(b=>
+    b.classList.toggle("on",b.dataset.t===themeMode));
+  if(t==="rain") startRain(); else stopRain();
+}
+document.querySelectorAll("#themeSeg button").forEach(b=>
+  b.addEventListener("click",()=>{ themeMode=b.dataset.t;
+    try{ localStorage.setItem(LS_THEME,themeMode); }catch(e){}
+    applyTheme(); }));
+setInterval(()=>{ if(themeMode==="auto") applyTheme(); },60000);
 
-</main>
+/* ================= 雨幕(湿漉漉) ================= */
+const rainC=$("rain"); let rainRaf=null, drops=[];
+function sizeRain(){ rainC.width=innerWidth; rainC.height=innerHeight; }
+function makeDrop(init){
+  return { x:Math.random()*rainC.width, y:init?Math.random()*rainC.height:-20,
+    l:8+Math.random()*16, v:2.2+Math.random()*3.4, w:Math.random()<.12?1.6:1,
+    drift:(Math.random()-.5)*.4 };
+}
+function rainFrame(){
+  const c=rainC.getContext("2d");
+  c.clearRect(0,0,rainC.width,rainC.height);
+  c.lineCap="round";
+  drops.forEach(d=>{
+    c.strokeStyle="rgba(140,165,180,"+(d.w>1?".34":".2")+")";
+    c.lineWidth=d.w;
+    c.beginPath(); c.moveTo(d.x,d.y); c.lineTo(d.x+d.drift*3,d.y+d.l); c.stroke();
+    d.y+=d.v*(d.l/14); d.x+=d.drift;
+    if(d.y>rainC.height+24){ Object.assign(d,makeDrop(false)); }
+  });
+  rainRaf=requestAnimationFrame(rainFrame);
+}
+function startRain(){
+  sizeRain();
+  if(!drops.length) drops=Array.from({length:110},()=>makeDrop(true));
+  if(reduceMotion){ /* 静止水痕 */
+    const c=rainC.getContext("2d"); c.clearRect(0,0,rainC.width,rainC.height);
+    drops.forEach(d=>{ c.strokeStyle="rgba(140,165,180,.18)"; c.lineWidth=d.w;
+      c.beginPath(); c.moveTo(d.x,d.y); c.lineTo(d.x,d.y+d.l); c.stroke(); });
+    return;
+  }
+  if(rainRaf==null) rainRaf=requestAnimationFrame(rainFrame);
+}
+function stopRain(){ if(rainRaf!=null){ cancelAnimationFrame(rainRaf); rainRaf=null; } }
+window.addEventListener("resize",()=>{ if(document.body.dataset.theme==="rain") sizeRain(); });
+applyTheme();
 
-<footer class="foot">
-  <span class="foot__mark">珈琲</span>
-  <p>© 2026 NIGHT COFFEE · 為夜裡還醒著的人而煮</p>
-  <a href="#top" class="foot__up">回到頂端 ↑</a>
-</footer>
+/* ================= map ================= */
+const LON0=-180,LON1=180,LAT0=75,LAT1=-62;
+const mapC=$("map"), fogC=$("fog"), wrapEl=$("boardWrap"), tip=$("tip");
+let W=0,H=0,DPR=1,landCache=null,clusters=[],hoverKey=null,flash={};
 
-<script src="js/main.js"></script>
+function proj(lat,lon){ return [ (lon-LON0)/(LON1-LON0)*W, (LAT0-lat)/(LAT0-LAT1)*H ]; }
+function inPoly(x,y,poly){ let ok=false;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const xi=poly[i][0],yi=poly[i][1],xj=poly[j][0],yj=poly[j][1];
+    if(((yi>y)!==(yj>y)) && (x<(xj-xi)*(y-yi)/(yj-yi)+xi)) ok=!ok;
+  } return ok; }
+function onLand(lon,lat){ return LAND.some(p=>inPoly(lon,lat,p)); }
+
+function buildLand(){
+  landCache=document.createElement("canvas");
+  landCache.width=W*DPR; landCache.height=H*DPR;
+  const c=landCache.getContext("2d"); c.scale(DPR,DPR);
+  const step=2.05, r=Math.max(1.1,W/620);
+  c.fillStyle="rgba(157,184,166,.5)";
+  for(let lat=LAT1;lat<=LAT0;lat+=step){
+    for(let lon=LON0;lon<=LON1;lon+=step){
+      if(onLand(lon,lat)){ const [x,y]=proj(lat,lon);
+        c.beginPath(); c.arc(x,y,r,0,7); c.fill(); }
+    }
+  }
+  /* 咖啡带虚线 */
+  c.strokeStyle="rgba(217,164,65,.25)"; c.setLineDash([4,6]); c.lineWidth=1;
+  [[23.4],[-23.4]].forEach(([la])=>{ const [,y]=proj(la,0);
+    c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); });
+  c.setLineDash([]);
+}
+
+function clusterBeans(){
+  const m=new Map();
+  beans.forEach(b=>{
+    const k=b.lat.toFixed(1)+","+b.lon.toFixed(1);
+    if(!m.has(k)) m.set(k,{key:k,lat:b.lat,lon:b.lon,items:[]});
+    m.get(k).items.push(b);
+  });
+  clusters=[...m.values()];
+}
+
+function drawMap(t){
+  const c=mapC.getContext("2d");
+  c.setTransform(DPR,0,0,DPR,0,0);
+  c.clearRect(0,0,W,H);
+  if(landCache) c.drawImage(landCache,0,0,W,H);
+
+  const [hx,hy]=proj(home.lat,home.lon);
+
+  /* arcs */
+  c.strokeStyle="rgba(234,224,201,.22)"; c.lineWidth=1; c.setLineDash([3,5]);
+  clusters.forEach(cl=>{
+    const [x,y]=proj(cl.lat,cl.lon);
+    const mx=(x+hx)/2, my=Math.min(y,hy)-Math.abs(x-hx)*0.18-14;
+    c.beginPath(); c.moveTo(x,y); c.quadraticCurveTo(mx,my,hx,hy); c.stroke();
+  });
+  c.setLineDash([]);
+
+  /* home */
+  c.beginPath(); c.arc(hx,hy,4,0,7); c.fillStyle="rgba(234,224,201,.9)"; c.fill();
+  c.beginPath(); c.arc(hx,hy,8,0,7); c.strokeStyle="rgba(234,224,201,.4)"; c.stroke();
+
+  /* lamps */
+  clusters.forEach(cl=>{
+    const [x,y]=proj(cl.lat,cl.lon);
+    const n=cl.items.length;
+    const base=4+Math.min(3,Math.log2(n+1));
+    const tw=reduceMotion?1:(0.82+0.18*Math.sin((t||0)/900+x));
+    const fl=flash[cl.key]&&t<flash[cl.key] ? 1+0.7*Math.sin((flash[cl.key]-t)/120) : 1;
+    const R=base*tw*fl, hover=hoverKey===cl.key;
+    const g=c.createRadialGradient(x,y,0,x,y,R*4.2);
+    g.addColorStop(0,"rgba(255,207,122,"+(hover?".95":".8")+")");
+    g.addColorStop(.35,"rgba(217,164,65,.35)");
+    g.addColorStop(1,"rgba(217,164,65,0)");
+    c.fillStyle=g; c.beginPath(); c.arc(x,y,R*4.2,0,7); c.fill();
+    c.fillStyle=hover?"#ffe3a8":"#ffcf7a";
+    c.beginPath(); c.arc(x,y,R,0,7); c.fill();
+    c.strokeStyle="rgba(194,59,43,.85)"; c.lineWidth=1.4;
+    c.beginPath(); c.arc(x,y,R+1.2,0,7); c.stroke();
+    if(n>1){ c.fillStyle="rgba(234,224,201,.9)"; c.font="600 10px sans-serif";
+      c.fillText("×"+n,x+R+4,y-R-2); }
+  });
+}
+
+let rafId=null;
+function loop(t){ drawMap(t); rafId=requestAnimationFrame(loop); }
+function renderMapOnce(){ drawMap(performance.now()); }
+function startLoop(){ if(reduceMotion){ renderMapOnce(); return; }
+  if(rafId==null) rafId=requestAnimationFrame(loop); }
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden&&rafId!=null){ cancelAnimationFrame(rafId); rafId=null; }
+  else startLoop(); });
+
+function sizeMap(){
+  const w=Math.max(660,wrapEl.clientWidth); W=w; H=Math.round(w*0.42);
+  DPR=Math.min(2,window.devicePixelRatio||1);
+  mapC.width=W*DPR; mapC.height=H*DPR;
+  mapC.style.height=H+"px";
+  fogC.width=W*DPR; fogC.height=H*DPR; fogC.style.height=H+"px";
+  buildLand(); renderMapOnce();
+}
+
+/* hover / tap */
+function pickCluster(mx,my){
+  let best=null,bd=196;
+  clusters.forEach(cl=>{ const [x,y]=proj(cl.lat,cl.lon);
+    const d=(x-mx)**2+(y-my)**2; if(d<bd){ bd=d; best=cl; } });
+  return best;
+}
+function showTip(cl,px,py){
+  const b=cl.items[cl.items.length-1];
+  const o=originOf(b.origin)||{};
+  const km=hav(home.lat,home.lon,cl.lat,cl.lon);
+  let list="";
+  if(cl.items.length>1){
+    list='<div class="t-meta">这里你已喝过 '+cl.items.length+' 只:'+
+      cl.items.map(i=>i.name).join("、")+'</div>';
+  }
+  tip.innerHTML='<h4>'+esc(b.name)+'</h4>'+
+    '<div class="t-org">'+esc(b.origin)+'</div>'+
+    '<div class="t-alt">生长海拔 <b>'+esc(b.alt||o.alt||"—")+'</b> m</div>'+
+    '<div class="t-meta">'+esc(b.process)+' · '+esc(b.roast)+' · '+esc(b.date)+'</div>'+
+    (o.f?'<div class="t-meta">常见风味:'+esc(o.f)+'</div>':"")+
+    (b.note?'<div class="t-note">「'+esc(b.note)+'」</div>':"")+list+
+    '<div class="t-km">这杯替你走了 '+fmt(km)+' 公里</div>';
+  const bw=wrapEl.clientWidth, bh=wrapEl.clientHeight;
+  let lx=px+16, ly=py-10;
+  if(lx>bw-290) lx=px-296; if(lx<6) lx=6; if(ly<6) ly=6;
+  tip.style.left=lx+"px"; tip.style.top=ly+"px";
+  tip.classList.add("on");
+  const th=tip.offsetHeight;
+  if(ly+th>bh-8) tip.style.top=Math.max(6,bh-th-8)+"px";
+}
+function hideTip(){ tip.classList.remove("on"); hoverKey=null; if(reduceMotion) renderMapOnce(); }
+function esc(s){ return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+
+mapC.addEventListener("mousemove",e=>{
+  const r=mapC.getBoundingClientRect();
+  const sx=W/r.width;
+  const mx=(e.clientX-r.left)*sx, my=(e.clientY-r.top)*sx;
+  const cl=pickCluster(mx,my);
+  if(cl){ hoverKey=cl.key; mapC.style.cursor="pointer";
+    showTip(cl,(e.clientX-r.left),(e.clientY-r.top)); }
+  else{ mapC.style.cursor="crosshair"; hideTip(); }
+  if(reduceMotion) renderMapOnce();
+});
+mapC.addEventListener("mouseleave",hideTip);
+mapC.addEventListener("click",e=>{
+  const r=mapC.getBoundingClientRect(); const sx=W/r.width;
+  const cl=pickCluster((e.clientX-r.left)*sx,(e.clientY-r.top)*sx);
+  if(cl){ hoverKey=cl.key; showTip(cl,e.clientX-r.left,e.clientY-r.top); }
+  else hideTip();
+});
+
+/* ================= fog(擦玻璃) ================= */
+(function initFog(){
+  const today=todayStr();
+  let wiped=false; try{ wiped=sessionStorage.getItem(SS_WIPE)===today; }catch(e){}
+  const hint=$("fogHint");
+  if(wiped){ fogC.classList.add("done"); hint.classList.add("done"); return; }
+  const fc=fogC.getContext("2d");
+  function paintFog(){
+    fc.setTransform(DPR,0,0,DPR,0,0);
+    fc.clearRect(0,0,W,H);
+    fc.fillStyle="rgba(226,218,196,.94)"; fc.fillRect(0,0,W,H);
+    fc.strokeStyle="rgba(160,155,130,.18)";
+    for(let x=0;x<W;x+=24){ fc.beginPath(); fc.moveTo(x,0); fc.lineTo(x,H); fc.stroke(); }
+    for(let y=0;y<H;y+=24){ fc.beginPath(); fc.moveTo(0,y); fc.lineTo(W,y); fc.stroke(); }
+    fc.fillStyle="rgba(255,255,255,.25)";
+    for(let i=0;i<W*H/380;i++){ fc.fillRect(Math.random()*W,Math.random()*H,1.4,1.4); }
+  }
+  /* wait one tick for sizeMap */
+  setTimeout(paintFog,60);
+  let strokes=0, done=false;
+  function wipeAt(x,y){
+    fc.save(); fc.globalCompositeOperation="destination-out";
+    const g=fc.createRadialGradient(x,y,4,x,y,46);
+    g.addColorStop(0,"rgba(0,0,0,1)"); g.addColorStop(1,"rgba(0,0,0,0)");
+    fc.fillStyle=g; fc.beginPath(); fc.arc(x,y,46,0,7); fc.fill(); fc.restore();
+    if(++strokes%24===0) checkClear();
+  }
+  function checkClear(){
+    if(done) return;
+    const d=fc.getImageData(0,0,fogC.width,fogC.height,{willReadFrequently:true});
+    let clear=0, total=0;
+    for(let i=3;i<d.data.length;i+=4*97){ total++; if(d.data[i]<40) clear++; }
+    if(clear/total>0.58) finish();
+  }
+  function finish(){
+    if(done) return; done=true;
+    fogC.classList.add("done"); hint.classList.add("done");
+    try{ sessionStorage.setItem(SS_WIPE,today); }catch(e){}
+  }
+  function pos(e){
+    const r=fogC.getBoundingClientRect(); const sx=W/r.width;
+    const p=e.touches?e.touches[0]:e;
+    return [(p.clientX-r.left)*sx,(p.clientY-r.top)*sx];
+  }
+  fogC.addEventListener("mousemove",e=>{ const [x,y]=pos(e); wipeAt(x,y); });
+  fogC.addEventListener("touchmove",e=>{ e.preventDefault(); const [x,y]=pos(e); wipeAt(x,y); },{passive:false});
+  $("btnWipeAll").addEventListener("click",finish);
+})();
+
+/* ================= stats ================= */
+function renderStats(){
+  const kms=clusters.map(cl=>hav(home.lat,home.lon,cl.lat,cl.lon));
+  const perBean=beans.map(b=>hav(home.lat,home.lon,b.lat,b.lon));
+  const total=perBean.reduce((a,b)=>a+b,0);
+  const countries=new Set(beans.map(b=>(originOf(b.origin)||{}).c||b.origin)).size;
+  const rounds=(total/40075);
+  $("stats").innerHTML=
+    st(beans.length,"只豆 · BEANS")+
+    st(clusters.length,"处产地 · ORIGINS")+
+    st(countries,"个国家 · COUNTRIES")+
+    st(fmt(total),"公里 · KM TRAVELED",true);
+  $("statsLine").innerHTML= beans.length
+    ? "这些豆子加起来,替你走了 <b>"+fmt(total)+"</b> 公里 —— 约等于绕地球 <b>"+ (rounds<0.1?rounds.toFixed(2):rounds.toFixed(1)) +"</b> 圈。"
+    : "地图还黑着。点亮第一盏灯,让第一只豆替你出发。";
+  function st(v,l,red){ return '<div class="stat'+(red?' stat--red':'')+'"><b>'+v+'</b><span>'+l+'</span></div>'; }
+}
+
+/* ================= records ================= */
+function renderRecs(){
+  const el=$("recList");
+  if(!beans.length){ el.innerHTML='<div class="empty">还没有记录。上面「记一只豆」,写下你喝的第一支。</div>'; return; }
+  el.innerHTML=[...beans].sort((a,b)=>b.date.localeCompare(a.date)).map(b=>
+    '<div class="rec">'+
+    '<span class="r-date">'+esc(b.date)+'</span>'+
+    '<span class="r-name">'+esc(b.name)+'</span>'+
+    '<span class="r-org">'+esc(b.origin)+' · '+esc(b.process)+' · '+esc(b.roast)+'</span>'+
+    '<span class="r-alt">'+esc(b.alt||"—")+' m</span>'+
+    '<button class="r-del" data-id="'+b.id+'" title="删除">✕</button>'+
+    (b.note?'<div class="r-note">「'+esc(b.note)+'」</div>':"")+
+    '</div>').join("");
+  el.querySelectorAll(".r-del").forEach(btn=>btn.addEventListener("click",()=>{
+    if(!confirm("确定删除这条记录吗?")) return;
+    beans=beans.filter(x=>String(x.id)!==btn.dataset.id);
+    save(); refresh();
+  }));
+}
+
+/* ================= form ================= */
+const dl=$("originList");
+dl.innerHTML=ORIGINS.map(o=>'<option value="'+o.n+'">').join("");
+$("fDate").value=todayStr();
+$("fOrigin").addEventListener("change",()=>{
+  const o=originOf($("fOrigin").value);
+  if(o){ $("fAlt").value=o.alt; $("originHint").textContent="✓ "+o.c+" · 常见风味:"+o.f; }
+  else $("originHint").textContent="请从列表中选择产地(输入关键词可搜索)";
+});
+$("beanForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const o=originOf($("fOrigin").value.trim());
+  if(!o){ $("originHint").textContent="⚠ 请从下拉列表里选择一个产地"; $("fOrigin").focus(); return; }
+  const b={ id:Date.now(), name:$("fName").value.trim(), origin:o.n,
+    lat:o.lat, lon:o.lon, alt:$("fAlt").value.trim()||o.alt,
+    process:$("fProcess").value, roast:$("fRoast").value,
+    date:$("fDate").value||todayStr(), note:$("fNote").value.trim() };
+  beans.push(b); save(); refresh();
+  flash[b.lat.toFixed(1)+","+b.lon.toFixed(1)]=performance.now()+1600;
+  const km=hav(home.lat,home.lon,b.lat,b.lon);
+  const t=$("toast"); t.textContent="灯亮了。这杯"+b.name+",替你走了 "+fmt(km)+" 公里。";
+  t.classList.add("on"); setTimeout(()=>t.classList.remove("on"),4200);
+  $("beanForm").reset(); $("fDate").value=todayStr();
+  $("originHint").textContent="选定产地后,海拔会自动带出,可修改";
+  document.querySelector(".board-sec").scrollIntoView({behavior:reduceMotion?"auto":"smooth"});
+});
+$("btnSample").addEventListener("click",()=>{
+  const today=todayStr();
+  const S=[
+    ["果丁丁合作社","埃塞俄比亚 · 耶加雪菲","水洗","浅焙","像茉莉花掉进柠檬水里。"],
+    ["圣家庄园","哥伦比亚 · 慧兰","水洗","中浅焙","下雨天喝的,焦糖味很稳。"],
+    ["林东蓝湖","印尼 · 苏门答腊 曼特宁","湿刨","中深焙","厚得像走进一间木屋。"],
+    ["翡翠庄园 瑰夏","巴拿马 · 波奎特","日晒","浅焙","第一口就安静下来了。"],
+    ["天宇庄园","中国 · 云南保山","日晒","中焙","家门口的山,也有好味道。"]
+  ];
+  S.forEach((s,i)=>{ const o=originOf(s[1]);
+    beans.push({ id:Date.now()+i, name:s[0], origin:o.n, lat:o.lat, lon:o.lon,
+      alt:o.alt, process:s[2], roast:s[3], date:today, note:s[4] }); });
+  save(); refresh();
+});
+
+/* ================= almanac ================= */
+(function(){
+  const d=new Date();
+  const doy=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5);
+  const a=ALMANAC[doy%ALMANAC.length];
+  const lucks=["大吉","中吉","吉","小吉","末吉"];
+  let hash=0; const s=todayStr(); for(let i=0;i<s.length;i++) hash=(hash*31+s.charCodeAt(i))>>>0;
+  $("oDate").textContent=d.getFullYear()+" . "+(d.getMonth()+1)+" . "+d.getDate();
+  $("oLuck").textContent=lucks[hash%lucks.length];
+  $("oBody").textContent=a.t;
+  $("oYi").textContent=a.y; $("oJi").textContent=a.j;
+  const omik=$("omik");
+  let drawn=false; try{ drawn=localStorage.getItem(LS_OMIK)===todayStr(); }catch(e){}
+  if(drawn) omik.classList.add("flipped");
+  $("omikBack").addEventListener("click",()=>{
+    omik.classList.add("flipped");
+    try{ localStorage.setItem(LS_OMIK,todayStr()); }catch(e){}
+  });
+})();
+
+/* ================= city / export / import ================= */
+const dlg=$("dlgCity"), sel=$("selCity");
+sel.innerHTML=CITIES.map(c=>'<option value="'+c[0]+'">'+c[0]+'</option>').join("");
+$("btnCity").addEventListener("click",()=>{ sel.value=home.name; dlg.showModal(); });
+$("btnCityCancel").addEventListener("click",()=>dlg.close());
+$("btnCitySave").addEventListener("click",()=>{
+  const c=CITIES.find(x=>x[0]===sel.value);
+  if(c){ home={name:c[0],lat:c[1],lon:c[2]};
+    try{ localStorage.setItem(LS_HOME,JSON.stringify(home)); }catch(e){}
+    refresh(); }
+  dlg.close();
+});
+$("btnExport").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify({beans,home},null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="kissa-"+todayStr()+".json"; a.click();
+  URL.revokeObjectURL(a.href);
+});
+$("btnImport").addEventListener("click",()=>$("fileImport").click());
+$("fileImport").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ try{
+      const d=JSON.parse(rd.result);
+      if(!Array.isArray(d.beans)) throw 0;
+      if(!confirm("导入将替换当前 "+beans.length+" 条记录,继续吗?")) return;
+      beans=d.beans; if(d.home) home=d.home;
+      save(); try{ localStorage.setItem(LS_HOME,JSON.stringify(home)); }catch(e){}
+      refresh();
+    }catch(err){ alert("这个文件看不懂——请选择之前「导出备份」生成的 .json 文件。"); }
+    e.target.value=""; };
+  rd.readAsText(f);
+});
+
+/* ================= boot ================= */
+function save(){ try{ localStorage.setItem(LS_BEANS,JSON.stringify(beans)); }catch(e){} }
+function refresh(){ clusterBeans(); renderStats(); renderRecs(); renderMapOnce(); }
+function boot(){
+  sizeMap(); clusterBeans(); renderStats(); renderRecs(); startLoop();
+  $("btnCity").textContent="🏠 "+home.name;
+}
+window.addEventListener("resize",()=>{ sizeMap(); });
+const _refresh=refresh;
+refresh=function(){ _refresh(); $("btnCity").textContent="🏠 "+home.name; };
+boot();
+</script>
 </body>
 </html>

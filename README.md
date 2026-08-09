@@ -1,33 +1,29 @@
-# 珈琲 · NIGHT COFFEE
+# 珈琲 KAFFEE · 一杯替你走千里路
 
-A single-page site for a late-night coffee bar, styled after the visual
-reference: a rainy street scene seen through wired/frosted glass — teal and
-amber bokeh behind the pane, red 珈琲 signage glowing in the corner.
-Wong Kar-wai dusk.
+送给咖啡师 Lukai 的网站。他每喝一只手冲豆,记下名字和信息,
+世界地图上就亮起一盏灯——悬停可以看到这只豆生长的海拔。
+他的每一壶咖啡,都替他走过了千千万万的路。
 
-## Look & feel
-- **Palette** — near-black teal-tinted ground, signage red (`#d6362b`),
-  teal glow, warm amber.
-- **Textures** — animated film grain, a wired-glass grid overlay, drifting
-  bokeh light blobs.
-- **Type** — Shippori Mincho (serif kanji), Zen Kaku Gothic (sans),
-  Cormorant Garamond (italic latin accents).
-- **Copy** — bilingual (繁體中文 / 日本語 / English) to match the reference's mood.
+视觉参考:雾面铁丝纹玻璃后的街景——奶油黄、青瓷绿、石板蓝,
+一枚朱红「珈琲」。昭和喫茶店的复古气质。
 
-## Structure
-```
-index.html      markup + content
-css/style.css   all styling, textures, animation, responsive rules
-js/main.js      scroll reveals, sticky nav, gentle blob parallax
-assets/         (reserved for imagery)
-```
+## 功能
+- **咖啡地图** — 点阵世界地图 + 咖啡带虚线;每只豆是一盏小灯,
+  悬停显示海拔、处理法、风味与「这杯替你走了 N 公里」;
+  灯到所在城市画微光弧线;累计统计(豆数/产地/国家/公里/绕地球圈数)
+- **擦玻璃** — 每天第一次打开,地图蒙着雾,要先把玻璃擦亮(开店仪式)
+- **今日咖啡历** — 御神签式抽签,每日一条咖啡典故 + 宜/忌
+- **时段与天气** — 按北京时间自动切换 日/夜 主题,手动可切「雨」
+  (湿漉漉雨丝模式);开关:自动/日/夜/雨
+- **豆单** — 全部记录列表,可删除;数据存浏览器 localStorage,
+  支持一键导出/导入 JSON 备份
+- **所在城市** — 可设置,用于计算每只豆的公里数
 
-## Run
-Static site — no build step. Open `index.html`, or serve locally:
+## 技术
+单文件静态站(`index.html`,零依赖、无构建、系统字体),
+Canvas 手绘地图与雨幕,`prefers-reduced-motion` 适配。
+直接双击打开,或:
 
 ```bash
 python3 -m http.server 8000
-# → http://localhost:8000
 ```
-
-Fonts load from Google Fonts (needs network on first paint).
