@@ -279,11 +279,20 @@ dialog .d-foot{ display:flex; gap:10px; justify-content:flex-end; margin-top:18p
   box-shadow:0 18px 44px rgba(0,0,0,.45); }
 .ek-panel[hidden]{ display:none; }
 .ek-hd{ display:flex; align-items:center; gap:8px; padding:9px 12px;
-  border-bottom:1px solid #2a2c2a; font-family:var(--serif); letter-spacing:.12em; }
+  border-bottom:1px solid #2a2c2a; font-family:var(--serif); letter-spacing:.12em;
+  cursor:move; user-select:none; -webkit-user-select:none; touch-action:none; }
 .ek-hd span{ color:#8b8a7d; font-family:var(--sans); font-size:11px; flex:1; letter-spacing:.04em; }
 .ek-hd button{ border:0; background:none; color:#8b8a7d; cursor:pointer; font-size:11px; letter-spacing:.08em; }
 .ek-hd button:hover{ color:#e06a55; }
 .ek-bd{ padding:10px 12px; }
+.ek-cmd{ display:flex; gap:6px; margin-bottom:6px; }
+.ek-cmd input{ flex:1; background:#101210; border:1px solid #3a3c3a; color:#e2dfd2;
+  border-radius:5px; padding:6px 9px; font-size:12px; font-family:var(--sans); }
+.ek-cmd input:focus{ border-color:#c23b2b; outline:none; }
+.ek-cmd button{ border:1px solid #383a38; background:#1d1f1d; color:#c9c6b9;
+  border-radius:5px; padding:0 14px; cursor:pointer; font-size:11px; letter-spacing:.08em; }
+.ek-cmd button:hover{ border-color:#c23b2b; color:#e06a55; }
+.ek-say{ font-size:10.5px; color:#9fb8a6; min-height:16px; margin-bottom:8px; letter-spacing:.03em; }
 .ek-path{ font:10.5px/1.7 "SF Mono","Menlo",monospace; color:#9fb8a6; min-height:18px;
   word-break:break-all; margin-bottom:8px; }
 .ek-ops{ display:flex; gap:6px; margin-bottom:10px; }
@@ -1061,6 +1070,8 @@ boot();
   panel.innerHTML=
     '<div class="ek-hd">画板<span id="ekCount"></span><button id="ekOff">退出画板</button></div>'+
     '<div class="ek-bd">'+
+    '<div class="ek-cmd"><input id="ekCmd" placeholder="用人话改:换个字体 / 字小一点 / 底色暗一点"><button id="ekGo">执行</button></div>'+
+    '<div class="ek-say" id="ekSay"></div>'+
     '<div class="ek-path" id="ekPath">点击页面任意元素开始</div>'+
     '<div class="ek-ops"><button id="ekParent">选父级</button><button id="ekHide">隐藏</button>'+
     '<button id="ekDel">删除</button><button id="ekUndo">撤销</button></div>'+
@@ -1083,6 +1094,7 @@ boot();
 
   /* helpers */
   function cssPath(el){
+    if(el===document.body) return "body";
     const parts=[]; let e=el;
     while(e && e!==document.body && parts.length<4){
       if(e.id){ parts.unshift("#"+e.id); break; }
@@ -1101,6 +1113,7 @@ boot();
     if(l.t==="del") return "删除 | "+l.p;
     if(l.t==="move") return "移动 | "+l.p+" | x"+(l.dx>=0?"+":"")+l.dx+"px, y"+(l.dy>=0?"+":"")+l.dy+"px";
     if(l.t==="text") return "文字 | "+l.p+' | "'+l.o+'" → "'+l.n+'"';
+    if(l.t==="note") return "指令(待 Claude 实现) | "+l.p+' | "'+l.n+'"';
     return l.p+" | "+l.k+": "+l.o+" → "+l.n;
   }
   function saveLog(){ try{ localStorage.setItem(LOGKEY,JSON.stringify(LOG)); }catch(e){} renderLog(); }
@@ -1159,6 +1172,7 @@ boot();
   });
 
   /* 事件冻结 + 选择 */
+  let justDragged=false;
   function intercept(e){
     if(!ED) return;
     if(e.target.closest&&e.target.closest("#editkit")) return;
@@ -1166,12 +1180,21 @@ boot();
     if(textEl&&(e.target===textEl||textEl.contains(e.target))) return;
     e.preventDefault(); e.stopPropagation();
     if(e.type==="pointerdown"){
-      if(selEl&&(e.target===selEl||selEl.contains(e.target))){
+      const t=e.target;
+      if(t!==document.body&&t!==document.documentElement){
+        /* 按住即选中、即可拖 —— 不用先点一下再按 */
+        if(!(selEl&&(t===selEl||selEl.contains(t)))) select(t);
         const m=MOVE.get(selEl)||{dx:0,dy:0};
-        drag={x:e.clientX,y:e.clientY,dx:m.dx,dy:m.dy};
+        drag={x:e.clientX,y:e.clientY,dx:m.dx,dy:m.dy,moved:false,
+          prevTransition:selEl.style.transition||"",
+          prevDisplay:selEl.style.display||""};
+        /* 行内元素吃不到位移;过渡动画会让拖动跟不上手 */
+        selEl.style.transition="none";
+        if(getComputedStyle(selEl).display==="inline") selEl.style.display="inline-block";
       }
     }
     if(e.type==="click"){
+      if(justDragged){ justDragged=false; return; }
       const t=e.target;
       if(t===document.body||t===document.documentElement) select(null);
       else select(t);
@@ -1179,25 +1202,33 @@ boot();
   }
   ["click","pointerdown","mousedown","touchstart","submit","change","dblclick"]
     .forEach(t=>document.addEventListener(t,t==="dblclick"?dbl:intercept,true));
-  document.addEventListener("mousemove",e=>{
+  function onMove(e){
     if(!ED) return;
+    if(e.target.closest&&e.target.closest("#editkit")){ hoverEl=null; refreshBoxes(); return; }
     e.stopPropagation();
     if(drag&&selEl){
+      if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>3) drag.moved=true;
       const m={dx:drag.dx+e.clientX-drag.x, dy:drag.dy+e.clientY-drag.y};
       MOVE.set(selEl,m);
       selEl.style.transform="translate("+m.dx+"px,"+m.dy+"px)";
       refreshBoxes(); return;
     }
-    if(e.target.closest&&e.target.closest("#editkit")){ hoverEl=null; refreshBoxes(); return; }
     hoverEl=(e.target===document.body||e.target===document.documentElement||e.target===selEl)?null:e.target;
     refreshBoxes();
-  },true);
+  }
+  /* 拖动挂在 pointermove 上(pointerdown 被 preventDefault 后,mousemove 可能不再触发) */
+  document.addEventListener("pointermove",onMove,true);
+  document.addEventListener("mousemove",e=>{ if(ED&&!drag) onMove(e); },true);
   document.addEventListener("pointerup",()=>{
     if(drag&&selEl){
+      selEl.style.transition=drag.prevTransition;
+      if(!drag.moved) selEl.style.display=drag.prevDisplay;
+      justDragged=drag.moved;
       const m=MOVE.get(selEl), path=cssPath(selEl), el=selEl;
-      if(m&&(m.dx||m.dy)){
+      if(drag.moved&&m&&(m.dx||m.dy)){
         const e0=LOG.find(l=>l.t==="move"&&l.p===path);
-        if(e0){ e0.dx=m.dx; e0.dy=m.dy; } else LOG.push({t:"move",p:path,dx:m.dx,dy:m.dy});
+        if(e0){ e0.dx=Math.round(m.dx); e0.dy=Math.round(m.dy); }
+        else LOG.push({t:"move",p:path,dx:Math.round(m.dx),dy:Math.round(m.dy)});
         UNDO.push(()=>{ MOVE.delete(el); el.style.transform="";
           const i=LOG.findIndex(l=>l.t==="move"&&l.p===path); if(i>-1) LOG.splice(i,1); saveLog(); });
         saveLog();
@@ -1223,6 +1254,105 @@ boot();
         saveLog(); }
     });
   }
+
+  /* ---- 指令条:人话 → 样式(规则解析,听不懂就记清单转 Claude) ---- */
+  const FONTS=[
+    ["宋体系",'"Songti SC","STSong","Noto Serif SC",serif'],
+    ["楷体系",'"Kaiti SC","STKaiti","KaiTi","Songti SC",serif'],
+    ["黑体系",'"PingFang SC","Hiragino Sans GB","Noto Sans SC",sans-serif'],
+    ["圆体系",'"Yuanti SC","YouYuan","PingFang SC",sans-serif'],
+    ["仿宋系",'"FangSong SC","STFangsong","FangSong","Songti SC",serif'],
+    ["明朝体",'"Hiragino Mincho ProN","Yu Mincho","Songti SC",serif']
+  ];
+  let fontIdx=0;
+  const NAMED={"红":"#c2382a","蓝":"#5d7386","绿":"#47705a","黄":"#d9a441",
+    "黑":"#26281f","白":"#f3f2eb","灰":"#8f8e81","橙":"#d07a3a","紫":"#6f5d86"};
+  function say(t){ $("ekSay").textContent=t; }
+  function adjColor(hex,f){
+    const n=parseInt(hex.slice(1),16);
+    const m=v=>Math.max(0,Math.min(255,Math.round(f>0? v+(255-v)*f : v*(1+f))));
+    return "#"+((1<<24)+(m(n>>16&255)<<16)+(m(n>>8&255)<<8)+m(n&255)).toString(16).slice(1);
+  }
+  function applyS(el,css,camel,val){
+    const path=cssPath(el), prevInline=el.style.getPropertyValue(css);
+    const o=String(prevInline||getComputedStyle(el).getPropertyValue(css)||"").trim();
+    el.style.setProperty(css,val);
+    UNDO.push(()=>{ prevInline?el.style.setProperty(css,prevInline):el.style.removeProperty(css);
+      logStyle(path,css,o,prevInline||o); });
+    logStyle(path,css,o,String(val)); refreshBoxes();
+    if(el===selEl) select(el);
+  }
+  function runCmd(){
+    const q=$("ekCmd").value.trim(); if(!q) return;
+    const el=selEl, cs=el?getComputedStyle(el):null;
+    const num=(q.match(/(\d+(?:\.\d+)?)\s*(?:px|号)?/)||[])[1];
+    const smaller=/小|细|紧|窄|淡|浅/.test(q), bigger=/大|粗|松|宽|深|浓|暗/.test(q);
+    /* 字体 */
+    if(/字体|font/i.test(q)){
+      let f=null;
+      if(/楷/.test(q)) f=FONTS[1]; else if(/黑体|黑/.test(q)) f=FONTS[2];
+      else if(/圆/.test(q)) f=FONTS[3]; else if(/仿宋/.test(q)) f=FONTS[4];
+      else if(/明朝/.test(q)) f=FONTS[5]; else if(/宋/.test(q)) f=FONTS[0];
+      else { fontIdx=(fontIdx+1)%FONTS.length; f=FONTS[fontIdx]; }
+      const t=el||document.body;
+      applyS(t,"font-family","fontFamily",f[1]);
+      if(!el) applyS(document.body,"--serif","fontFamily",f[1]);
+      say("已换 "+f[0]+(el?"(仅选中元素)":"(全局)")+"。再执行一次换下一款");
+    }
+    else if(/隐藏/.test(q)&&el){ $("ekHide").click(); say("已隐藏"); }
+    else if(/删除|删掉/.test(q)&&el){ $("ekDel").click(); say("已删除"); }
+    else if(/居中/.test(q)&&el){ applyS(el,"text-align","textAlign","center"); say("已居中"); }
+    else if(/加粗/.test(q)&&el){ applyS(el,"font-weight","fontWeight","700"); say("已加粗"); }
+    else if(/(透明|淡)/.test(q)&&el&&/透明|淡一点/.test(q)){
+      const o=parseFloat(cs.opacity);
+      const v=/不透明|实/.test(q)?Math.min(1,o+.15):Math.max(.1,o-.15);
+      applyS(el,"opacity","opacity",v.toFixed(2)); say("透明度 → "+v.toFixed(2));
+    }
+    else if(/字距|间距/.test(q)&&el){
+      const v=(parseFloat(cs.letterSpacing)||0)+(smaller?-1:1);
+      applyS(el,"letter-spacing","letterSpacing",v+"px"); say("字距 → "+v+"px");
+    }
+    else if(/行高/.test(q)&&el){
+      const v=+( (parseFloat(cs.lineHeight)/parseFloat(cs.fontSize)) + (smaller?-0.15:0.15) ).toFixed(2);
+      applyS(el,"line-height","lineHeight",v); say("行高 → "+v);
+    }
+    else if(/(底色|背景)/.test(q)){
+      const t=el||document.body;
+      const key=Object.keys(NAMED).find(k=>q.includes(k));
+      let v=null;
+      if(key) v=NAMED[key];
+      else if(smaller||bigger){ v=adjColor(toHex(getComputedStyle(t).backgroundColor), smaller? .12 : -.12); }
+      if(v){ applyS(t,"background-color","backgroundColor",v); say("底色 → "+v+(el?"":"(全局)")); }
+      else say("底色想要什么?试:底色暗一点 / 背景换灰色");
+    }
+    else if(/(颜色|文字|红|蓝|绿|黄|黑|白|灰|橙|紫)/.test(q)&&el){
+      const key=Object.keys(NAMED).find(k=>q.includes(k));
+      let v=null;
+      if(key&&!smaller&&!bigger) v=NAMED[key];
+      else v=adjColor(toHex(cs.color), smaller? .15 : -.15);
+      applyS(el,"color","color",v); say("文字色 → "+v);
+    }
+    else if(/(字|号)/.test(q)&&(num||smaller||bigger)&&el){
+      const v=num?+num:Math.max(9,parseFloat(cs.fontSize)+(smaller?-2:2));
+      applyS(el,"font-size","fontSize",v+"px"); say("字号 → "+v+"px");
+    }
+    else if(/(大|小)一点/.test(q)&&el){
+      const v=Math.max(9,parseFloat(cs.fontSize)+(smaller?-2:2));
+      applyS(el,"font-size","fontSize",v+"px"); say("字号 → "+v+"px");
+    }
+    else if(!el&&/字|颜色|大|小|间距|行高|居中|加粗|透明/.test(q)){
+      say("先点选一个元素,再执行这条");return;
+    }
+    else{
+      LOG.push({t:"note",p:el?cssPath(el):"(整页)",n:q});
+      UNDO.push(()=>{ LOG.pop(); saveLog(); });
+      saveLog();
+      say("这条我不会直接改——已记进清单,复制发给 Claude 帮你实现");
+    }
+    $("ekCmd").value="";
+  }
+  $("ekGo").addEventListener("click",runCmd);
+  $("ekCmd").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); runCmd(); } });
 
   /* 操作按钮 */
   $("ekParent").addEventListener("click",()=>{
@@ -1265,6 +1395,26 @@ boot();
     if(on){ forceFogDone(); renderLog(); }
     else{ select(null); hoverEl=null; refreshBoxes(); }
   }
+  /* 面板本身可拖走(抓标题栏),免得挡住正在调的区域 */
+  (function(){
+    const hd=panel.querySelector(".ek-hd");
+    let pd=null;
+    hd.addEventListener("pointerdown",e=>{
+      if(e.target.tagName==="BUTTON") return;
+      const r=panel.getBoundingClientRect();
+      panel.style.left=r.left+"px"; panel.style.top=r.top+"px"; panel.style.bottom="auto";
+      pd={x:e.clientX-r.left, y:e.clientY-r.top};
+      try{ hd.setPointerCapture(e.pointerId); }catch(err){}
+      e.preventDefault(); e.stopPropagation();
+    });
+    hd.addEventListener("pointermove",e=>{
+      if(!pd) return;
+      panel.style.left=Math.max(4,Math.min(innerWidth-90,e.clientX-pd.x))+"px";
+      panel.style.top=Math.max(4,Math.min(innerHeight-44,e.clientY-pd.y))+"px";
+    });
+    hd.addEventListener("pointerup",()=>{ pd=null; });
+  })();
+
   $("btnEdit").addEventListener("click",()=>setED(!ED));
   $("ekOff").addEventListener("click",()=>setED(false));
   document.addEventListener("keydown",e=>{
