@@ -273,6 +273,11 @@ dialog .d-foot{ display:flex; gap:10px; justify-content:flex-end; margin-top:18p
 .ek-box{ position:absolute; z-index:260; pointer-events:none; display:none; }
 #ekHover{ outline:1px dashed rgba(194,59,43,.75); background:rgba(194,59,43,.05); }
 #ekSel{ outline:2px solid #c23b2b; }
+#ekGX,#ekGY{ position:fixed; z-index:290; pointer-events:none; display:none; background:#2bb3a3; }
+#ekGX{ width:1px; top:0; bottom:0; box-shadow:0 0 0 .5px rgba(43,179,163,.4); }
+#ekGY{ height:1px; left:0; right:0; box-shadow:0 0 0 .5px rgba(43,179,163,.4); }
+.ek-newtext{ position:absolute; z-index:150; font-family:var(--serif); color:var(--ink);
+  font-size:16px; letter-spacing:.08em; line-height:1.7; padding:2px 6px; min-width:40px; }
 .ek-panel{ position:fixed; z-index:300; left:16px; bottom:16px; width:312px; max-height:82vh;
   overflow:auto; background:#161816; color:#d6d3c6; border:1px solid #303230;
   border-radius:8px; font-family:var(--sans); font-size:12px;
@@ -317,6 +322,29 @@ body.editing #rain{ display:none; }
   .rec{ grid-template-columns:auto 1fr auto; }
   .rec .r-org{ grid-column:2; } .rec .r-alt{ display:none; }
   .hd__side{ align-items:flex-start; text-align:left; }
+}
+/* ---------- 手机端 ---------- */
+@media (max-width:640px){
+  :root{ --edge:16px; }
+  .hd{ padding-top:20px; }
+  .brand h1 small{ letter-spacing:.28em; }
+  .greet{ font-size:.85rem; }
+  .hd__btns{ gap:6px 12px; }
+  .board-cap p{ display:none; }
+  .board-cap h2 i{ display:block; margin-top:4px; }
+  .board__kanji{ top:14px; right:16px; }
+  .v-cap{ left:12px; bottom:12px; }
+  .tip{ max-width:236px; }
+  .stats{ grid-template-columns:1fr 1fr; }
+  .stat{ border-left:0; padding-left:0; border-top:1px solid var(--line-soft); }
+  .stat:nth-child(-n+2){ border-top:0; }
+  .stat:nth-child(even){ padding-left:18px; border-left:1px solid var(--line); }
+  .f-grid{ grid-template-columns:1fr; gap:14px; }
+  .f-foot{ flex-direction:column; align-items:stretch; }
+  .f-foot .btn{ text-align:center; }
+  .omik{ min-height:270px; }
+  .rec{ gap:6px 12px; padding:13px 2px; }
+  .ek-panel{ width:min(312px, calc(100vw - 16px)); left:8px; bottom:8px; }
 }
 @media (prefers-reduced-motion:reduce){
   *{ transition:none!important; animation:none!important; scroll-behavior:auto; }
@@ -1045,6 +1073,14 @@ function refresh(){ clusterBeans(); renderStats(); renderRecs(); renderMapOnce()
 function boot(){
   sizeMap(); clusterBeans(); renderStats(); renderRecs(); startLoop();
   $("btnCity").textContent=home.name;
+  /* 手机上地图横向可滑:初始滚到"家"附近,并换成触屏提示 */
+  const bs=document.querySelector(".board-scroll");
+  if(bs&&bs.scrollWidth>bs.clientWidth+20){
+    const [hx]=proj(home.lat,home.lon);
+    bs.scrollLeft=Math.max(0,hx-bs.clientWidth*0.62);
+  }
+  if(window.matchMedia("(pointer:coarse)").matches&&$("mapHint"))
+    $("mapHint").textContent="点一盏灯看海拔 · 地图可左右滑动";
 }
 window.addEventListener("resize",()=>{ sizeMap(); });
 const _refresh=refresh;
@@ -1064,7 +1100,9 @@ boot();
   /* UI */
   const hoverBox=document.createElement("div"); hoverBox.id="ekHover"; hoverBox.className="ek-box";
   const selBox=document.createElement("div"); selBox.id="ekSel"; selBox.className="ek-box";
-  document.body.append(hoverBox,selBox);
+  const gx=document.createElement("div"); gx.id="ekGX";
+  const gy=document.createElement("div"); gy.id="ekGY";
+  document.body.append(hoverBox,selBox,gx,gy);
   const panel=document.createElement("div");
   panel.className="ek-panel"; panel.id="editkit"; panel.hidden=true;
   panel.innerHTML=
@@ -1073,8 +1111,8 @@ boot();
     '<div class="ek-cmd"><input id="ekCmd" placeholder="用人话改:换个字体 / 字小一点 / 底色暗一点"><button id="ekGo">执行</button></div>'+
     '<div class="ek-say" id="ekSay"></div>'+
     '<div class="ek-path" id="ekPath">点击页面任意元素开始</div>'+
-    '<div class="ek-ops"><button id="ekParent">选父级</button><button id="ekHide">隐藏</button>'+
-    '<button id="ekDel">删除</button><button id="ekUndo">撤销</button></div>'+
+    '<div class="ek-ops"><button id="ekParent">选父级</button><button id="ekText">+文本</button>'+
+    '<button id="ekHide">隐藏</button><button id="ekDel">删除</button><button id="ekUndo">撤销</button></div>'+
     '<div class="ek-grid">'+
     '<span>字号</span><input id="ekFs" type="number" step="1">'+
     '<span>字距</span><input id="ekLs" type="number" step="0.2">'+
@@ -1114,6 +1152,7 @@ boot();
     if(l.t==="move") return "移动 | "+l.p+" | x"+(l.dx>=0?"+":"")+l.dx+"px, y"+(l.dy>=0?"+":"")+l.dy+"px";
     if(l.t==="text") return "文字 | "+l.p+' | "'+l.o+'" → "'+l.n+'"';
     if(l.t==="note") return "指令(待 Claude 实现) | "+l.p+' | "'+l.n+'"';
+    if(l.t==="add") return "新增文本框 | "+l.p+"(位置与内容见其移动/文字条目)";
     return l.p+" | "+l.k+": "+l.o+" → "+l.n;
   }
   function saveLog(){ try{ localStorage.setItem(LOGKEY,JSON.stringify(LOG)); }catch(e){} renderLog(); }
@@ -1177,7 +1216,10 @@ boot();
     if(!ED) return;
     if(e.target.closest&&e.target.closest("#editkit")) return;
     if(e.target.id==="btnEdit") return;
-    if(textEl&&(e.target===textEl||textEl.contains(e.target))) return;
+    if(textEl){
+      if(e.target===textEl||textEl.contains(e.target)) return;
+      if(e.type==="pointerdown"||e.type==="mousedown") textEl.blur(); /* 点外面=提交文字 */
+    }
     e.preventDefault(); e.stopPropagation();
     if(e.type==="pointerdown"){
       const t=e.target;
@@ -1191,6 +1233,38 @@ boot();
         /* 行内元素吃不到位移;过渡动画会让拖动跟不上手 */
         selEl.style.transition="none";
         if(getComputedStyle(selEl).display==="inline") selEl.style.display="inline-block";
+        /* 对齐吸附候选:兄弟、父容器、页面中线 */
+        drag.r0=selEl.getBoundingClientRect();
+        const xs=[innerWidth/2], ys=[];
+        const par=selEl.parentElement;
+        if(par){
+          const pr=par.getBoundingClientRect();
+          xs.push(pr.left,pr.left+pr.width/2,pr.right);
+          ys.push(pr.top,pr.top+pr.height/2,pr.bottom);
+          [...par.children].forEach(c=>{
+            if(c===selEl) return;
+            const r=c.getBoundingClientRect();
+            if(r.width<2&&r.height<2) return;
+            xs.push(r.left,r.left+r.width/2,r.right);
+            ys.push(r.top,r.top+r.height/2,r.bottom);
+          });
+        }
+        /* 视口内主要元素的边线也作为对齐候选 */
+        let cnt=0;
+        document.body.querySelectorAll("section,header,footer,h1,h2,h3,p,div,span,button,canvas,ul,li")
+          .forEach(c=>{
+            if(cnt>400) return;
+            if(c===selEl||selEl.contains(c)) return;
+            if(c.closest&&c.closest("#editkit")) return;
+            if(/^ek/.test(c.id||"")) return;
+            const r=c.getBoundingClientRect();
+            if(r.width<8||r.height<8) return;
+            if(r.bottom<0||r.top>innerHeight||r.right<0||r.left>innerWidth) return;
+            cnt++;
+            xs.push(r.left,r.left+r.width/2,r.right);
+            ys.push(r.top,r.top+r.height/2,r.bottom);
+          });
+        drag.snapX=xs; drag.snapY=ys;
       }
     }
     if(e.type==="click"){
@@ -1209,6 +1283,23 @@ boot();
     if(drag&&selEl){
       if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>3) drag.moved=true;
       const m={dx:drag.dx+e.clientX-drag.x, dy:drag.dy+e.clientY-drag.y};
+      /* 对照线 + 吸附:边/中心贴齐候选线时轻轻吸住 */
+      let gxPos=null,gyPos=null;
+      if(drag.r0){
+        const sdx=e.clientX-drag.x, sdy=e.clientY-drag.y, TH=6;
+        const L=drag.r0.left+sdx, R=drag.r0.right+sdx, CX=(L+R)/2;
+        const T=drag.r0.top+sdy, B=drag.r0.bottom+sdy, CY=(T+B)/2;
+        let bd=TH;
+        drag.snapX.forEach(x=>[L,CX,R].forEach(v=>{
+          const d=Math.abs(v-x); if(d<bd){ bd=d; gxPos=x; m.dx=Math.round(m.dx+x-v); } }));
+        bd=TH;
+        drag.snapY.forEach(y=>[T,CY,B].forEach(v=>{
+          const d=Math.abs(v-y); if(d<bd){ bd=d; gyPos=y; m.dy=Math.round(m.dy+y-v); } }));
+      }
+      gx.style.display=gxPos!=null?"block":"none";
+      if(gxPos!=null) gx.style.left=Math.round(gxPos)+"px";
+      gy.style.display=gyPos!=null?"block":"none";
+      if(gyPos!=null) gy.style.top=Math.round(gyPos)+"px";
       MOVE.set(selEl,m);
       selEl.style.transform="translate("+m.dx+"px,"+m.dy+"px)";
       refreshBoxes(); return;
@@ -1224,6 +1315,7 @@ boot();
       selEl.style.transition=drag.prevTransition;
       if(!drag.moved) selEl.style.display=drag.prevDisplay;
       justDragged=drag.moved;
+      gx.style.display="none"; gy.style.display="none";
       const m=MOVE.get(selEl), path=cssPath(selEl), el=selEl;
       if(drag.moved&&m&&(m.dx||m.dy)){
         const e0=LOG.find(l=>l.t==="move"&&l.p===path);
@@ -1246,6 +1338,8 @@ boot();
     if(!el||!el.textContent||el.children.length>3) return;
     textEl=el; const o=el.textContent;
     el.setAttribute("contenteditable","true"); el.focus();
+    try{ const r=document.createRange(); r.selectNodeContents(el);
+      const s=getSelection(); s.removeAllRanges(); s.addRange(r); }catch(err){}
     el.addEventListener("blur",function h(){
       el.removeAttribute("contenteditable"); el.removeEventListener("blur",h);
       const n=el.textContent; textEl=null;
@@ -1309,7 +1403,7 @@ boot();
       applyS(el,"opacity","opacity",v.toFixed(2)); say("透明度 → "+v.toFixed(2));
     }
     else if(/字距|间距/.test(q)&&el){
-      const v=(parseFloat(cs.letterSpacing)||0)+(smaller?-1:1);
+      const v=+(((parseFloat(cs.letterSpacing)||0)+(smaller?-1:1)).toFixed(2));
       applyS(el,"letter-spacing","letterSpacing",v+"px"); say("字距 → "+v+"px");
     }
     else if(/行高/.test(q)&&el){
@@ -1333,11 +1427,11 @@ boot();
       applyS(el,"color","color",v); say("文字色 → "+v);
     }
     else if(/(字|号)/.test(q)&&(num||smaller||bigger)&&el){
-      const v=num?+num:Math.max(9,parseFloat(cs.fontSize)+(smaller?-2:2));
+      const v=num?+num:+(Math.max(9,parseFloat(cs.fontSize)+(smaller?-2:2)).toFixed(1));
       applyS(el,"font-size","fontSize",v+"px"); say("字号 → "+v+"px");
     }
     else if(/(大|小)一点/.test(q)&&el){
-      const v=Math.max(9,parseFloat(cs.fontSize)+(smaller?-2:2));
+      const v=+(Math.max(9,parseFloat(cs.fontSize)+(smaller?-2:2)).toFixed(1));
       applyS(el,"font-size","fontSize",v+"px"); say("字号 → "+v+"px");
     }
     else if(!el&&/字|颜色|大|小|间距|行高|居中|加粗|透明/.test(q)){
@@ -1355,6 +1449,22 @@ boot();
   $("ekCmd").addEventListener("keydown",e=>{ if(e.key==="Enter"){ e.preventDefault(); runCmd(); } });
 
   /* 操作按钮 */
+  let textN=0;
+  $("ekText").addEventListener("click",()=>{
+    textN++;
+    while(document.getElementById("new-text-"+textN)) textN++;
+    const d=document.createElement("div");
+    d.className="ek-newtext"; d.id="new-text-"+textN;
+    d.textContent="双击我,改成你的文字";
+    d.style.left=Math.round(scrollX+innerWidth*0.5-110)+"px";
+    d.style.top=Math.round(scrollY+150)+"px";
+    document.body.appendChild(d);
+    LOG.push({t:"add",p:"#"+d.id});
+    UNDO.push(()=>{ d.remove();
+      const i=LOG.findIndex(l=>l.t==="add"&&l.p==="#"+d.id); if(i>-1) LOG.splice(i,1); saveLog(); });
+    saveLog(); select(d);
+    say("已新增文本框:拖到想要的位置,双击改字,面板调样式");
+  });
   $("ekParent").addEventListener("click",()=>{
     if(selEl&&selEl.parentElement&&selEl.parentElement!==document.body) select(selEl.parentElement);
   });
