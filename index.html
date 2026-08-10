@@ -1114,6 +1114,8 @@ boot();
     '<div class="ek-ops"><button id="ekParent">选父级</button><button id="ekText">+文本</button>'+
     '<button id="ekHide">隐藏</button><button id="ekDel">删除</button><button id="ekUndo">撤销</button></div>'+
     '<div class="ek-grid">'+
+    '<span>位置X</span><input id="ekX" type="number" step="1">'+
+    '<span>位置Y</span><input id="ekY" type="number" step="1">'+
     '<span>字号</span><input id="ekFs" type="number" step="1">'+
     '<span>字距</span><input id="ekLs" type="number" step="0.2">'+
     '<span>行高</span><input id="ekLh" type="number" step="0.1">'+
@@ -1124,7 +1126,7 @@ boot();
     '<span>内距</span><input id="ekPd" type="number" step="1">'+
     '<span>上距</span><input id="ekMt" type="number" step="1">'+
     '</div>'+
-    '<p class="ek-hint">拖动=移动 · 双击=改文字 · 定完样子点「复制改动清单」发给 Claude,由他落进源码。刷新页面画板复原,清单保留。</p>'+
+    '<p class="ek-hint">拖动=移动(方向键微调,Shift=10px;按住 ⌥ 拖=关吸附) · 双击=改文字 · 定完点「复制改动清单」发给 Claude。刷新画板复原,清单保留。</p>'+
     '<textarea id="ekOut" rows="4" readonly></textarea>'+
     '<div class="ek-btns"><button id="ekCopy">复制改动清单</button><button id="ekClear">清空清单</button></div>'+
     '</div>';
@@ -1189,13 +1191,35 @@ boot();
     ["ekPd","padding","paddingTop",v=>v+"px",v=>parseFloat(v)||0],
     ["ekMt","margin-top","marginTop",v=>v+"px",v=>parseFloat(v)||0]
   ];
+  /* 位置:统一入口(拖动/方向键/输入框都走这里) */
+  function setOffset(el,dx,dy){
+    dx=Math.round(dx); dy=Math.round(dy);
+    MOVE.set(el,{dx,dy});
+    if(getComputedStyle(el).display==="inline") el.style.display="inline-block";
+    el.style.transition="none";
+    el.style.transform=(dx||dy)?("translate("+dx+"px,"+dy+"px)"):"";
+    const path=cssPath(el);
+    const e0=LOG.find(l=>l.t==="move"&&l.p===path);
+    if(dx||dy){ if(e0){ e0.dx=dx; e0.dy=dy; } else LOG.push({t:"move",p:path,dx,dy}); }
+    else if(e0) LOG.splice(LOG.indexOf(e0),1);
+    saveLog(); refreshBoxes();
+  }
+  function syncXY(){
+    const m=selEl?(MOVE.get(selEl)||{dx:0,dy:0}):{dx:0,dy:0};
+    $("ekX").value=m.dx; $("ekY").value=m.dy;
+  }
   function select(el){
     selEl=el; hoverEl=null; refreshBoxes();
     $("ekPath").textContent=el?cssPath(el):"点击页面任意元素开始";
+    syncXY();
     if(!el) return;
     const cs=getComputedStyle(el);
     FIELDS.forEach(([id,,camel,,read])=>{ try{ $(id).value=read(cs[camel]); }catch(e){} });
   }
+  ["ekX","ekY"].forEach(id=>$(id).addEventListener("input",()=>{
+    if(!selEl) return;
+    setOffset(selEl, +$("ekX").value||0, +$("ekY").value||0);
+  }));
   FIELDS.forEach(([id,css,camel,fmt])=>{
     $(id).addEventListener("input",()=>{
       if(!selEl) return;
@@ -1264,7 +1288,10 @@ boot();
             xs.push(r.left,r.left+r.width/2,r.right);
             ys.push(r.top,r.top+r.height/2,r.bottom);
           });
-        drag.snapX=xs; drag.snapY=ys;
+        /* 去重:相邻 2px 内的候选线合并,减少"粘手"感 */
+        const dedupe=a=>{ a=[...a].sort((p,q)=>p-q); const o=[];
+          a.forEach(v=>{ if(!o.length||v-o[o.length-1]>2) o.push(Math.round(v)); }); return o; };
+        drag.snapX=dedupe(xs); drag.snapY=dedupe(ys);
       }
     }
     if(e.type==="click"){
@@ -1285,8 +1312,8 @@ boot();
       const m={dx:drag.dx+e.clientX-drag.x, dy:drag.dy+e.clientY-drag.y};
       /* 对照线 + 吸附:边/中心贴齐候选线时轻轻吸住 */
       let gxPos=null,gyPos=null;
-      if(drag.r0){
-        const sdx=e.clientX-drag.x, sdy=e.clientY-drag.y, TH=6;
+      if(drag.r0&&!e.altKey){
+        const sdx=e.clientX-drag.x, sdy=e.clientY-drag.y, TH=5;
         const L=drag.r0.left+sdx, R=drag.r0.right+sdx, CX=(L+R)/2;
         const T=drag.r0.top+sdy, B=drag.r0.bottom+sdy, CY=(T+B)/2;
         let bd=TH;
@@ -1316,6 +1343,7 @@ boot();
       if(!drag.moved) selEl.style.display=drag.prevDisplay;
       justDragged=drag.moved;
       gx.style.display="none"; gy.style.display="none";
+      syncXY();
       const m=MOVE.get(selEl), path=cssPath(selEl), el=selEl;
       if(drag.moved&&m&&(m.dx||m.dy)){
         const e0=LOG.find(l=>l.t==="move"&&l.p===path);
@@ -1528,7 +1556,18 @@ boot();
   $("btnEdit").addEventListener("click",()=>setED(!ED));
   $("ekOff").addEventListener("click",()=>setED(false));
   document.addEventListener("keydown",e=>{
-    if(e.key==="Escape"&&ED&&!textEl){ selEl?select(null):setED(false); }
+    if(!ED) return;
+    if(e.key==="Escape"&&!textEl){ selEl?select(null):setED(false); return; }
+    /* 方向键微调选中元素(1px,Shift=10px)——焦点在面板输入框里时不劫持 */
+    if(!selEl||textEl) return;
+    if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#editkit")) return;
+    const step=e.shiftKey?10:1; let dx=0,dy=0;
+    if(e.key==="ArrowLeft") dx=-step; else if(e.key==="ArrowRight") dx=step;
+    else if(e.key==="ArrowUp") dy=-step; else if(e.key==="ArrowDown") dy=step;
+    else return;
+    e.preventDefault(); e.stopPropagation();
+    const m=MOVE.get(selEl)||{dx:0,dy:0};
+    setOffset(selEl,m.dx+dx,m.dy+dy); syncXY();
   });
 })();
 </script>
