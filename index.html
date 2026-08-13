@@ -14,44 +14,44 @@
    页面是安静的骨白纸,数字用时刻表的语言。
    ========================================================= */
 :root{
-  /* 参考图一:白布纹 / 梅子黑 / 酒梅 / 灰苔绿 / 深砖红 / 芥末金 */
-  --paper:#f1efe8; --paper-2:#e7e5dc; --paper-hi:#faf8f3;
-  --card:#f5f3ec; --card-2:#eae8df; --field:#f8f6f0;
-  --ink:#1f191c; --ink-soft:#554b50; --ink-faint:#8d8489;
-  --board:#1f191c; --board-2:#131013;
-  --celadon:#d3d8b5; --blue:#6f5460; --good:#6d7a4f;
-  --red:#751e1e; --red-deep:#571414;
-  --amber:#e3ca76; --lamp:#e3ca76;
-  --line:rgba(31,25,28,.18); --line-soft:rgba(31,25,28,.09);
+  /* 日式复古三色:米纸 / 暖茶金 #BE9D5B / 枫叶赤 #A13931 / 墨炭灰 #2F2F2F */
+  --paper:#e9e2d2; --paper-2:#ded5c1; --paper-hi:#f1ebdd;
+  --card:#eee7d8; --card-2:#e3dbc9; --field:#f4eee0;
+  --ink:#2f2f2f; --ink-soft:#5d5850; --ink-faint:#948b7a;
+  --board:#2f2f2f; --board-2:#1f1f1f;
+  --celadon:#8ea18e; --blue:#8a6f3f; --good:#5f7a52;
+  --red:#a13931; --red-deep:#7c2b24;
+  --amber:#be9d5b; --lamp:#d9b56b; --gold:#be9d5b;
+  --line:rgba(47,47,47,.18); --line-soft:rgba(47,47,47,.09);
   --serif:"Songti SC","STSong","Noto Serif SC","Source Han Serif SC","Hiragino Mincho ProN",serif;
   --sans:"PingFang SC","Hiragino Sans GB","Noto Sans SC","Microsoft YaHei",sans-serif;
   --latin:"Baskerville","Cormorant Garamond","Times New Roman",serif;
   --edge:clamp(16px,4vw,48px);
 }
-/* 夜 — 梅子黑房间,酒梅色的家具 */
+/* 夜 — 墨炭的房间,金色的带子照旧亮着 */
 body[data-theme="night"]{
-  --paper:#191316; --paper-2:#120e10; --paper-hi:#221a1e;
-  --card:#2a2027; --card-2:#231a20; --field:#261d23;
-  --ink:#ece8dc; --ink-soft:#b3a8ad; --ink-faint:#7c7076;
-  --blue:#a08a95; --good:#b5bd8f;
-  --red:#a53a30; --red-deep:#7c2a22;
-  --line:rgba(236,232,220,.2); --line-soft:rgba(236,232,220,.09);
+  --paper:#222120; --paper-2:#191918; --paper-hi:#2a2928;
+  --card:#2c2b29; --card-2:#252423; --field:#282726;
+  --ink:#e8e0cd; --ink-soft:#b3a992; --ink-faint:#7c7463;
+  --blue:#c8a45e; --good:#9fb38a;
+  --red:#c04737; --red-deep:#96352a; --gold:#be9d5b;
+  --line:rgba(232,224,205,.2); --line-soft:rgba(232,224,205,.09);
 }
-/* 雨 — 灰苔绿蒙上水汽 */
+/* 雨 — 米纸受潮,灰半度 */
 body[data-theme="rain"]{
-  --paper:#e2e4d6; --paper-2:#d6d8c8; --paper-hi:#eaece0;
-  --card:#e8eadc; --card-2:#dde0d0; --field:#f0f2e6;
-  --ink:#26221f; --ink-soft:#585349; --ink-faint:#8e897c;
-  --blue:#6b5a63; --good:#6d7a4f;
-  --red:#6e2020; --red-deep:#521616;
-  --line:rgba(38,34,31,.2); --line-soft:rgba(38,34,31,.1);
+  --paper:#dcd8cb; --paper-2:#d0ccbd; --paper-hi:#e4e0d4;
+  --card:#e2ded1; --card-2:#d6d2c3; --field:#eae6da;
+  --ink:#33322e; --ink-soft:#5f5c52; --ink-faint:#91897a;
+  --blue:#7d6a44; --good:#5f7a52;
+  --red:#8f342c; --red-deep:#6d271f; --gold:#ac9058;
+  --line:rgba(51,50,46,.2); --line-soft:rgba(51,50,46,.1);
 }
 *{ box-sizing:border-box; margin:0; padding:0; }
 html{ scroll-behavior:smooth; }
 body{
   background:
-    repeating-linear-gradient(0deg, rgba(31,25,28,.016) 0 1px, transparent 1px 3px),
-    repeating-linear-gradient(90deg, rgba(31,25,28,.016) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(0deg, rgba(47,47,47,.018) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgba(47,47,47,.018) 0 1px, transparent 1px 3px),
     linear-gradient(180deg, var(--paper-hi) 0%, var(--paper) 55%, var(--paper-2) 100%);
   color:var(--ink); font-family:var(--sans); font-weight:400;
   line-height:1.75; letter-spacing:.01em; min-height:100vh;
@@ -120,8 +120,8 @@ body[data-theme="rain"] #rain{ display:block; }
 }
 .board__kanji{ position:absolute; z-index:3; top:22px; right:32px; pointer-events:none;
   font-family:var(--serif); font-weight:900; line-height:1;
-  font-size:clamp(2.4rem,5.5vw,3.8rem); letter-spacing:.06em; color:#a2332a;
-  text-shadow:0 0 24px rgba(117,30,30,.55); opacity:.97; }
+  font-size:clamp(2.4rem,5.5vw,3.8rem); letter-spacing:.06em; color:#ad3c31;
+  text-shadow:0 0 24px rgba(161,57,49,.45); opacity:.97; }
 .board__frame{ display:none; }
 #map{ display:block; width:100%; cursor:crosshair; }
 #fog{ position:absolute; inset:0; z-index:4; touch-action:none; transition:opacity 1.2s ease; }
@@ -136,34 +136,34 @@ body[data-theme="rain"] #rain{ display:block; }
   border:1px solid rgba(58,74,66,.5); color:#3a4a42; background:rgba(246,239,221,.6);
   padding:6px 16px; border-radius:999px; cursor:pointer; }
 .v-cap{ position:absolute; z-index:3; left:22px; bottom:20px; writing-mode:vertical-rl;
-  font-family:var(--serif); color:rgba(211,216,181,.32); letter-spacing:.4em;
+  font-family:var(--serif); color:rgba(226,216,196,.35); letter-spacing:.4em;
   font-size:.78rem; pointer-events:none; }
 
-.tip{ position:absolute; z-index:6; max-width:280px; background:rgba(40,30,36,.94);
+.tip{ position:absolute; z-index:6; max-width:280px; background:rgba(38,38,38,.95);
   border:1px solid rgba(234,224,201,.16); border-radius:3px; padding:15px 17px;
   backdrop-filter:blur(4px); pointer-events:none;
   opacity:0; transform:translateY(6px); transition:opacity .2s, transform .2s; }
 .tip.on{ opacity:1; transform:none; }
 .tip h4{ font-family:var(--serif); font-size:1.02rem; letter-spacing:.06em; color:#ece8da; }
-.tip .t-org{ color:#c05a4a; font-size:.78rem; letter-spacing:.12em; margin-top:3px; }
+.tip .t-org{ color:#cf5f4e; font-size:.78rem; letter-spacing:.12em; margin-top:3px; }
 .tip .t-alt{ margin-top:9px; font-size:.82rem; color:rgba(236,232,218,.65); }
-.tip .t-alt b{ font-family:var(--latin); font-size:1.08rem; color:#e3ca76; font-weight:500; font-variant-numeric:tabular-nums; }
+.tip .t-alt b{ font-family:var(--latin); font-size:1.08rem; color:#d9b56b; font-weight:500; font-variant-numeric:tabular-nums; }
 .tip .t-meta{ font-size:.75rem; color:rgba(236,232,218,.45); margin-top:6px; letter-spacing:.05em; }
 .tip .t-note{ margin-top:9px; padding-top:9px; border-top:1px solid rgba(234,224,201,.12);
   font-family:var(--serif); font-size:.84rem; color:rgba(236,232,218,.75); }
-.tip .t-km{ margin-top:9px; font-size:.76rem; color:#c6cd9f; letter-spacing:.08em; }
+.tip .t-km{ margin-top:9px; font-size:.76rem; color:#b9b1a0; letter-spacing:.08em; }
 
 /* ---------- stats · 时刻表排版 ---------- */
-.stats{ max-width:1160px; margin:0 auto; padding-inline:var(--edge);
+.stats{ margin-inline:calc(50% - 50vw); padding-inline:max(var(--edge), calc(50vw - 580px));
   display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  border-bottom:1px solid var(--line); }
+  background:var(--gold); }
 .stat{ padding:clamp(20px,3.5vh,32px) 20px clamp(16px,3vh,26px) 0; text-align:left;
-  border-left:1px solid var(--line); padding-left:20px; }
+  border-left:1px solid rgba(47,47,47,.22); padding-left:20px; }
 .stat:first-child{ border-left:0; padding-left:0; }
 .stat b{ display:block; font-family:var(--latin); font-weight:500; font-size:clamp(1.9rem,3.6vw,2.7rem);
-  color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:0; line-height:1.1; }
-.stat span{ display:block; margin-top:7px; font-size:.66rem; letter-spacing:.26em; color:var(--ink-faint); }
-.stat--red b{ color:var(--red); }
+  color:#2f2f2f; font-variant-numeric:tabular-nums; letter-spacing:0; line-height:1.1; }
+.stat span{ display:block; margin-top:7px; font-size:.66rem; letter-spacing:.26em; color:rgba(47,47,47,.6); }
+.stat--red b{ color:#8f2b24; }
 .stats-line{ max-width:1160px; margin:0 auto; padding:16px var(--edge) 0;
   text-align:left; font-family:var(--serif);
   color:var(--ink-soft); font-size:.9rem; letter-spacing:.08em; }
@@ -340,9 +340,9 @@ body.editing #rain{ display:none; }
   .v-cap{ left:12px; bottom:12px; }
   .tip{ max-width:236px; }
   .stats{ grid-template-columns:1fr 1fr; }
-  .stat{ border-left:0; padding-left:0; border-top:1px solid var(--line-soft); }
+  .stat{ border-left:0; padding-left:0; border-top:1px solid rgba(47,47,47,.16); }
   .stat:nth-child(-n+2){ border-top:0; }
-  .stat:nth-child(even){ padding-left:18px; border-left:1px solid var(--line); }
+  .stat:nth-child(even){ padding-left:18px; border-left:1px solid rgba(47,47,47,.22); }
   .f-grid{ grid-template-columns:1fr; gap:14px; }
   .f-foot{ flex-direction:column; align-items:stretch; }
   .f-foot .btn{ text-align:center; }
@@ -748,7 +748,7 @@ function buildLand(){
   landCache.width=W*DPR; landCache.height=H*DPR;
   const c=landCache.getContext("2d"); c.scale(DPR,DPR);
   const step=2.05, r=Math.max(1.1,W/620);
-  c.fillStyle="rgba(211,216,181,.44)";
+  c.fillStyle="rgba(226,216,196,.42)";
   for(let lat=LAT1;lat<=LAT0;lat+=step){
     for(let lon=LON0;lon<=LON1;lon+=step){
       if(onLand(lon,lat)){ const [x,y]=proj(lat,lon);
@@ -756,7 +756,7 @@ function buildLand(){
     }
   }
   /* 咖啡带虚线 */
-  c.strokeStyle="rgba(201,174,94,.3)"; c.setLineDash([4,6]); c.lineWidth=1;
+  c.strokeStyle="rgba(190,157,91,.35)"; c.setLineDash([4,6]); c.lineWidth=1;
   [[23.4],[-23.4]].forEach(([la])=>{ const [,y]=proj(la,0);
     c.beginPath(); c.moveTo(0,y); c.lineTo(W,y); c.stroke(); });
   c.setLineDash([]);
@@ -802,13 +802,13 @@ function drawMap(t){
     const fl=flash[cl.key]&&t<flash[cl.key] ? 1+0.7*Math.sin((flash[cl.key]-t)/120) : 1;
     const R=base*tw*fl, hover=hoverKey===cl.key;
     const g=c.createRadialGradient(x,y,0,x,y,R*4.2);
-    g.addColorStop(0,"rgba(227,202,118,"+(hover?".95":".8")+")");
-    g.addColorStop(.35,"rgba(227,202,118,.3)");
-    g.addColorStop(1,"rgba(227,202,118,0)");
+    g.addColorStop(0,"rgba(217,181,107,"+(hover?".95":".8")+")");
+    g.addColorStop(.35,"rgba(217,181,107,.3)");
+    g.addColorStop(1,"rgba(217,181,107,0)");
     c.fillStyle=g; c.beginPath(); c.arc(x,y,R*4.2,0,7); c.fill();
-    c.fillStyle=hover?"#f0dc9a":"#e3ca76";
+    c.fillStyle=hover?"#ecd18f":"#d9b56b";
     c.beginPath(); c.arc(x,y,R,0,7); c.fill();
-    c.strokeStyle="rgba(117,30,30,.95)"; c.lineWidth=1.4;
+    c.strokeStyle="rgba(161,57,49,.9)"; c.lineWidth=1.4;
     c.beginPath(); c.arc(x,y,R+1.2,0,7); c.stroke();
     if(n>1){ c.fillStyle="rgba(234,224,201,.9)"; c.font="600 10px sans-serif";
       c.fillText("×"+n,x+R+4,y-R-2); }
