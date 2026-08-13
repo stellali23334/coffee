@@ -1049,10 +1049,18 @@ $("btnCitySave").addEventListener("click",()=>{
   dlg.close();
 });
 $("btnExport").addEventListener("click",()=>{
-  const blob=new Blob([JSON.stringify({beans,home},null,2)],{type:"application/json"});
+  const payload=JSON.stringify({beans,home},null,2);
+  const name="kaffee-"+todayStr()+".json";
+  /* Claude 预览页里走官方下载通道;正式部署(GitHub Pages 等)走普通下载 */
+  if(window.claude&&window.claude.downloads){
+    window.claude.downloads.save({filename:name,data:payload})
+      .catch(err=>{ if(err&&err.code!=="declined") alert("导出没成功,再试一次?"); });
+    return;
+  }
+  const blob=new Blob([payload],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
-  a.download="kissa-"+todayStr()+".json"; a.click();
+  a.download=name; a.click();
   URL.revokeObjectURL(a.href);
 });
 $("btnImport").addEventListener("click",()=>$("fileImport").click());
